@@ -13,10 +13,10 @@ using namespace slick;
 void testConstructors(){
   cout << "SE3():\n" << SE3() << endl;
   SO3 so3;
-  Matrix<DefaultScalarType,3,1> v3=Matrix<DefaultScalarType,3,1>::Zero();
+  Matrix<SlickScalar,3,1> v3=Matrix<SlickScalar,3,1>::Zero();
   v3[0]=2;
   cout << "SE3(so3,v3):\n" << SE3(so3,v3) << endl;
-  Matrix<DefaultScalarType,6,1> v6 = Matrix<DefaultScalarType,6,1>::Zero();
+  Matrix<SlickScalar,6,1> v6 = Matrix<SlickScalar,6,1>::Zero();
   v6[0]=7;
   v6[3]=2.11;
   v6[4]=4.21;
@@ -25,14 +25,14 @@ void testConstructors(){
 
 void testOperators(){
   SO3 so3;
-  Matrix<DefaultScalarType,6,1> v6 = Matrix<DefaultScalarType,6,1>::Zero();
+  Matrix<SlickScalar,6,1> v6 = Matrix<SlickScalar,6,1>::Zero();
   v6[0]=7;
   v6[3]=2.11;
   v6[4]=4.21;
   cout << "v6:" << v6.transpose() << endl;
-  Matrix<DefaultScalarType,6,1> v6Minus = -v6;
+  Matrix<SlickScalar,6,1> v6Minus = -v6;
   cout << "SE3(v6)*SE3(-v6):\n" << SE3(v6)*SE3(v6Minus) << endl;
-  Matrix<DefaultScalarType,4,4> m4 = Matrix<DefaultScalarType,4,4>::Identity();
+  Matrix<SlickScalar,4,4> m4 = Matrix<SlickScalar,4,4>::Identity();
   cout << "SE3(v6)*m4:\n" << SE3(v6)*m4 << endl;
   cout << "m4*SE3(v6):\n" << endl;
   cout << m4*SE3(v6) << endl;

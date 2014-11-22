@@ -18,8 +18,8 @@ namespace slick {
 // @param[in] b vector of 3D points
 // @return SO3 containing the rotation such that b = T a
 // @ingroup absorient
-SLICK_API SO3 ComputeOrientation(const std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> > & a,
-                         const std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> > & b);
+SLICK_API SO3 ComputeOrientation(const std::vector<Eigen::Matrix<SlickScalar, 3, 1> > & a,
+                         const std::vector<Eigen::Matrix<SlickScalar, 3, 1> > & b);
 
 // computes rotation between two pairs of rays in space maximizing b * T a
 // its 8x faster then using the general ComputeOrientation for 2 correspondences
@@ -29,10 +29,10 @@ SLICK_API SO3 ComputeOrientation(const std::vector<Eigen::Matrix<DefaultScalarTy
 // @param[in] b2 second output vector
 // @return SO3 containing the rotation such that b = T a
 // @ingroup absorient
-SLICK_API SO3 ComputeOrientation(const Eigen::Matrix<DefaultScalarType, 3, 1> & a1,
-                         const Eigen::Matrix<DefaultScalarType, 3, 1> & b1,
-                         const Eigen::Matrix<DefaultScalarType, 3, 1> & a2,
-                         const Eigen::Matrix<DefaultScalarType, 3, 1> & b2);
+SLICK_API SO3 ComputeOrientation(const Eigen::Matrix<SlickScalar, 3, 1> & a1,
+                         const Eigen::Matrix<SlickScalar, 3, 1> & b1,
+                         const Eigen::Matrix<SlickScalar, 3, 1> & a2,
+                         const Eigen::Matrix<SlickScalar, 3, 1> & b2);
 
 // computes rigid transformation between two corresponding point sets after Horn
 // result is an SE3 that maps points from vector a to points from
@@ -41,8 +41,8 @@ SLICK_API SO3 ComputeOrientation(const Eigen::Matrix<DefaultScalarType, 3, 1> & 
 // @param[in] b vector of 3D points
 // @return SE3 containing the transformation such that b = T a
 // @ingroup absorient
-SLICK_API SE3 ComputeAbsoluteOrientation(const std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> > & a,
-                                 const std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> > & b);
+SLICK_API SE3 ComputeAbsoluteOrientation(const std::vector<Eigen::Matrix<SlickScalar, 3, 1> > & a,
+                                 const std::vector<Eigen::Matrix<SlickScalar, 3, 1> > & b);
 
 // computes the mean rotation of a set of rotations.
 // This is the rotation R such that R^{-1} * R_i is minimal for all R_i.
@@ -57,7 +57,7 @@ SLICK_API SO3 ComputeMeanOrientation(const std::vector<SO3 > & r);
 // @param[in] q unit quaternion as (q0,qx,qy,qz)
 // @return a 3x3 rotation matrix corresponding to the quaternion
 // @ingroup absorient
-SLICK_API Eigen::Matrix<DefaultScalarType, 3, 3> QuaternionToMatrix(
-  const Eigen::Matrix<DefaultScalarType, 4, 1> & q);
+SLICK_API Eigen::Matrix<SlickScalar, 3, 3> QuaternionToMatrix(
+  const Eigen::Matrix<SlickScalar, 4, 1> & q);
 
 }  // namespace slick

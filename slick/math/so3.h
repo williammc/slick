@@ -15,7 +15,7 @@ namespace slick {
 template <typename Precision> class SO3Group;
 template <typename Precision> class SE3Group;
 
-typedef SO3Group<DefaultScalarType> SO3;
+typedef SO3Group<SlickScalar> SO3;
 typedef SO3Group<double> SO3d;
 typedef SO3Group<float> SO3f;
 
@@ -29,7 +29,7 @@ typedef SO3Group<float> SO3f;
 /// and whose length is the angle of rotation in radians.
 /// Exponentiating this vector gives the matrix,
 /// and the logarithm of the matrix gives this vector.
-template <typename Precision = DefaultScalarType>
+template <typename Precision = SlickScalar>
 class SLICK_API SO3Group {
   typedef Eigen::Matrix<Precision, 3, 3> MatrixType;
 

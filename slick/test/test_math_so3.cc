@@ -11,14 +11,14 @@ using namespace slick;
 
 void test_constructors(){
   cout << "SO3():\n" << SO3() << endl;
-  Matrix<DefaultScalarType,3,1> v3(1.7,2.12,0.0);
+  Matrix<SlickScalar,3,1> v3(1.7,2.12,0.0);
   cout << "v3:" << v3 << endl;
   cout << "SO3(v3):\n" << SO3(v3) << endl;
   cout << "SO3::exp(v3):\n" << SO3::exp(v3).get_matrix().cast<float>() << endl;
-  Matrix<DefaultScalarType,3,1> v3Minus = -v3;
+  Matrix<SlickScalar,3,1> v3Minus = -v3;
   cout << "SO3(-v3):\n" << SO3(v3Minus) << endl;
   cout << "SO3(v3)*SO3(-v3):\n" << SO3(v3)*SO3(v3Minus) << endl;
-  Matrix<DefaultScalarType,3,3> m3;
+  Matrix<SlickScalar,3,3> m3;
   m3.setIdentity();
   SO3 so3 = m3;
   cout << "SO3 SO3=m2:\n" << so3 << endl;
@@ -34,7 +34,7 @@ void test_constructors(){
 }
 
 void test_operators(){
-  Matrix<DefaultScalarType, 3, 1> v3(1.7, 2.12, 0.0);
+  Matrix<SlickScalar, 3, 1> v3(1.7, 2.12, 0.0);
   cout << "v3:" << v3 << endl;
   SO3 so3_1(v3);
   cout << "so3_1 = SO3(v3):\n" << so3_1 << endl;

@@ -14,6 +14,7 @@ cmaker_common_build_setting()
 # endif()
 
 # include_directories(${GTEST_INCLUDE_DIRS})
+set(GTEST_BOTH_LIBRARIES gtest gtest_main)
 
 set(ALL_LIBRARIES ${Slick_LIBS} ${GTEST_BOTH_LIBRARIES})
 
@@ -21,6 +22,6 @@ set(ALL_LIBRARIES ${Slick_LIBS} ${GTEST_BOTH_LIBRARIES})
 file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cc)
 foreach(filename ${test_sources})
   get_filename_component(test_name ${filename} NAME_WE)
-  cmaker_add_test(${test_name} ${test_name}.cc)
+  cmaker_add_test(${test_name} ${test_name}.cc util.h)
   set_property(TARGET ${test_name} PROPERTY FOLDER "slick_libs/tests/unittest")
 endforeach()

@@ -3,8 +3,8 @@
 #include <Eigen/Eigen>
 #include <Eigen/Geometry>
 
-#include "math/so2.h"
-#include "math/test/unittest/util.h"
+#include "slick/math/so2.h"
+#include "slick/test/unittest/util.h"
 
 using namespace std;
 using namespace Eigen;

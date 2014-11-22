@@ -25,7 +25,7 @@ template <typename P, int N> class SL;
 // - anti-symmetric generators for every pair of off-diagonal elements
 // This choice represents the fact that SL(n) can be interpreted as the product
 // of all symmetric matrices with det() = 1 times SO(n).
-template <typename Precision = DefaultScalarType, int N = Eigen::Dynamic>
+template <typename Precision = SlickScalar, int N = Eigen::Dynamic>
 class SLICK_API SL {
   typedef Eigen::Matrix<Precision, N, N> MatrixType;
 

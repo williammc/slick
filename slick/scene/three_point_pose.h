@@ -11,7 +11,7 @@
 namespace slick {
 
 // A function to evaluate x^4 + Bx^3 + Cx^2 + Dx + E
-inline DefaultScalarType eval_quartic(DefaultScalarType B, DefaultScalarType C, DefaultScalarType D, DefaultScalarType E, DefaultScalarType x) {
+inline SlickScalar eval_quartic(SlickScalar B, SlickScalar C, SlickScalar D, SlickScalar E, SlickScalar x) {
   return E + x*(D + x*(C + x*(B + x)));
 }
 

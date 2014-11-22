@@ -5,7 +5,7 @@
 #include <Eigen/Core>
 
 namespace slick {
-const DefaultScalarType Line2d::epsilon = 1.e-30;
+const SlickScalar Line2d::epsilon = 1.e-30;
 
 Line2d::Line2d(const Eigen::Vector2d& pt1, const Eigen::Vector2d& pt2,
                bool linevec) {
@@ -25,7 +25,7 @@ Line2d::Line2d(const Eigen::Vector2d& pt1, const Eigen::Vector2d& pt2,
   CalcParams();
 }
 
-Line2d::Line2d(DefaultScalarType a, DefaultScalarType b, DefaultScalarType c) {
+Line2d::Line2d(SlickScalar a, SlickScalar b, SlickScalar c) {
   a = a;
   b = b;
   c = c;
@@ -37,7 +37,7 @@ Line2d::Line2d(DefaultScalarType a, DefaultScalarType b, DefaultScalarType c) {
 bool Line2d::IntersectLines(const Line2d& line, Eigen::Vector2d& intersection) const {
   // intersection point of line defined by p1 & p2 and line defined by p3 & p4
   // http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/
-  DefaultScalarType x1, x2, x3, x4, y1, y2, y3, y4;
+  SlickScalar x1, x2, x3, x4, y1, y2, y3, y4;
   x1 = point1[0];
   y1 = point1[1];
   x2 = point2[0];
@@ -93,7 +93,7 @@ int Line2d::GetQuadrant() const {
 }
 
 void Line2d::CalcParams(void) {
-  DefaultScalarType x1, y1, x2, y2;
+  SlickScalar x1, y1, x2, y2;
 
   x1 = point1.x();
   y1 = point1.y();

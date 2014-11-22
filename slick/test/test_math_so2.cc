@@ -16,7 +16,7 @@ void test_constructors(){
 }
 
 void test_operators(){
-  Matrix<DefaultScalarType, 2, 2> m2;
+  Matrix<SlickScalar, 2, 2> m2;
   m2.setIdentity();
   SO2 rot = m2;
   cout << "SO2 rot = m2:\n" << rot << endl;

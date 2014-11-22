@@ -7,7 +7,7 @@ namespace slick {
 
 template <typename Precision> class SE3Group;
 
-typedef SE3Group<DefaultScalarType> SE3;
+typedef SE3Group<SlickScalar> SE3;
 typedef SE3Group<double> SE3d;
 typedef SE3Group<float> SE3f;
 
@@ -22,7 +22,7 @@ typedef SE3Group<float> SE3f;
 /// translation vector while the second three are a rotation vector, whose direction is the axis of rotation
 /// and length the amount of rotation (in radians), as for SO3Group
 /// @ingroup math
-template <typename Precision = DefaultScalarType>
+template <typename Precision = SlickScalar>
 class SLICK_API SE3Group {
   typedef Eigen::Matrix<Precision, 4, 4> MatrixType;
 

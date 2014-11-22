@@ -17,13 +17,13 @@ struct SLICK_API Line2d {
   Line2d(const Eigen::Vector2d& pt1, const Eigen::Vector2d& pt2, bool linevec = false);
 
   // Constructor for common line-equation (a,b,c)
-  Line2d(DefaultScalarType a, DefaultScalarType b, DefaultScalarType c);
+  Line2d(SlickScalar a, SlickScalar b, SlickScalar c);
 
   // best-fitting line through point cloud (using SVD)
   explicit Line2d(const std::vector<Eigen::Vector2d> &pts);
 
   // value consider zero (e.x: identical points) if less than line precision.
-  bool is_zero(DefaultScalarType d) const{
+  bool is_zero(SlickScalar d) const{
     if (d < epsilon)
       return true;
     return false;
@@ -34,7 +34,7 @@ struct SLICK_API Line2d {
     return Line2d(point1 + vector, point2 + vector);
   }
 
-  Line2d scale_line(DefaultScalarType scale) {
+  Line2d scale_line(SlickScalar scale) {
     return Line2d(point1 * scale, point2 * scale);
   }
 
@@ -46,7 +46,7 @@ struct SLICK_API Line2d {
   }
 
   // Return length of the line segment
-  DefaultScalarType length() const {
+  SlickScalar length() const {
     return ((point1 - point2).norm());
   }
 
@@ -65,24 +65,24 @@ struct SLICK_API Line2d {
   }
 
   // Calculate absolute normal distance between line and point
-  DefaultScalarType perpendicular_distance(const Eigen::Vector2d& pt) const {
+  SlickScalar perpendicular_distance(const Eigen::Vector2d& pt) const {
     return (fabs((a*pt.x()+b*pt.y()+c) / sqrt(a*a+b*b)));
   }
 
   // Calculate signed normal distance between line and point
-  DefaultScalarType perpendicular_distance_signed(const Eigen::Vector2d& pt) const {
+  SlickScalar perpendicular_distance_signed(const Eigen::Vector2d& pt) const {
     return ((a*pt.x()+b*pt.y()+c) / sqrt(a*a+b*b));
   }
 
   // Calculates squared normal distance between line and point (speedup)
-  DefaultScalarType squared_perpendicular_distance(const Eigen::Vector2d& pt) const {
-    DefaultScalarType a = a*pt.x()+b*pt.y()+c;
+  SlickScalar squared_perpendicular_distance(const Eigen::Vector2d& pt) const {
+    SlickScalar a = a*pt.x()+b*pt.y()+c;
     return((a*a)/ (a*a+b*b));
   }
 
   // Project a 2D point onto the line
   Eigen::Vector2d project_pt(const Eigen::Vector2d &point) const {
-    DefaultScalarType s = (point - point1).transpose() * line_vector;
+    SlickScalar s = (point - point1).transpose() * line_vector;
     return point1 + line_vector * s;
   }
 
@@ -90,20 +90,20 @@ struct SLICK_API Line2d {
   int GetQuadrant() const;
 
   // returns the enclosed angle (in radians!!!)
-  DefaultScalarType enclosed_angle(const Line2d &line) const {
+  SlickScalar enclosed_angle(const Line2d &line) const {
     return std::acos(std::fabs(line_vector.transpose() * line.line_vector));
   }
 
   // Check if a point lies on this line subject to line precision (epsilon).
   bool contains_point(const Eigen::Vector2d& pt) const {
-    const DefaultScalarType d = perpendicular_distance(pt);
+    const SlickScalar d = perpendicular_distance(pt);
     if (d > epsilon )
       return false;
     if (!is_bounded) {
       return true;  // line is unbounded
     } else {
       // projected length
-      DefaultScalarType length_ = (pt - point1).transpose() * line_vector;
+      SlickScalar length_ = (pt - point1).transpose() * line_vector;
       if (length_ > 0.0)
         return (length_ < length());
       else
@@ -113,13 +113,13 @@ struct SLICK_API Line2d {
 
   // Check if this line align with another line
   bool is_aligned(const Line2d& another_line,
-                  const DefaultScalarType angle_threshold,
-                  const DefaultScalarType dist_threshold) const {
-    const DefaultScalarType cos_angle = line_vector.dot(another_line.line_vector);
+                  const SlickScalar angle_threshold,
+                  const SlickScalar dist_threshold) const {
+    const SlickScalar cos_angle = line_vector.dot(another_line.line_vector);
     if (std::fabs(cos_angle) > std::cos(M_PI/2-angle_threshold)) {
-      const DefaultScalarType len1 = perpendicular_distance(another_line.point1);
+      const SlickScalar len1 = perpendicular_distance(another_line.point1);
       if (len1 < dist_threshold) {
-        const DefaultScalarType len2 = perpendicular_distance(another_line.point2);
+        const SlickScalar len2 = perpendicular_distance(another_line.point2);
         if (len2 < dist_threshold)
           return true;
       }
@@ -142,13 +142,13 @@ struct SLICK_API Line2d {
     normal = Eigen::Vector2d(line_vector.y(), -line_vector.x());
   }
 
-  static const DefaultScalarType epsilon;  // Define line precision.
+  static const SlickScalar epsilon;  // Define line precision.
   Eigen::Vector2d point1;
   Eigen::Vector2d point2;
   Eigen::Vector2d normal;
   bool is_bounded;
-  DefaultScalarType a, b, c;
+  SlickScalar a, b, c;
   Eigen::Vector2d line_vector;
-  DefaultScalarType score;
+  SlickScalar score;
 };
 }  // namespace slick

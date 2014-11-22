@@ -9,9 +9,9 @@
 
 namespace slick {
 
-static inline Eigen::Matrix<DefaultScalarType, 3, 1> GetRotationVector(const SO3  & r) {
-  const Eigen::Matrix<DefaultScalarType, 3, 3> & my_matrix = r.get_matrix();
-  Eigen::Matrix<DefaultScalarType, 3, 1> result;
+static inline Eigen::Matrix<SlickScalar, 3, 1> GetRotationVector(const SO3  & r) {
+  const Eigen::Matrix<SlickScalar, 3, 3> & my_matrix = r.get_matrix();
+  Eigen::Matrix<SlickScalar, 3, 1> result;
   result[0] = (my_matrix(2, 1)-my_matrix(1, 2));
   result[1] = (my_matrix(0, 2)-my_matrix(2, 0));
   result[2] = (my_matrix(1, 0)-my_matrix(0, 1));
@@ -19,14 +19,14 @@ static inline Eigen::Matrix<DefaultScalarType, 3, 1> GetRotationVector(const SO3
   return result;
 }
 
-static inline Eigen::Matrix<DefaultScalarType, 3, 1> GetRotationVector(const SE3  & t) {
+static inline Eigen::Matrix<SlickScalar, 3, 1> GetRotationVector(const SE3  & t) {
   return GetRotationVector(t.get_rotation());
 }
 
 template<class T>
 static inline SO3  SolveXABX(const std::vector<T> & A,
                                const std::vector<T> & B) {
-  std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> > va(A.size()), vb(A.size());
+  std::vector<Eigen::Matrix<SlickScalar, 3, 1> > va(A.size()), vb(A.size());
   for (unsigned int i = 0; i < A.size(); ++i) {
     va[i] = GetRotationVector(A[i]);
     vb[i] = GetRotationVector(B[i]);
@@ -34,8 +34,8 @@ static inline SO3  SolveXABX(const std::vector<T> & A,
   return ComputeOrientation(va, vb);
 }
 
-static inline Eigen::Matrix<DefaultScalarType, 3, 3> EyeMinus(const Eigen::Matrix<DefaultScalarType, 3, 3> & m) {
-  Eigen::Matrix<DefaultScalarType, 3, 3> result = Eigen::Matrix<DefaultScalarType, 3, 3>::Identity();
+static inline Eigen::Matrix<SlickScalar, 3, 3> EyeMinus(const Eigen::Matrix<SlickScalar, 3, 3> & m) {
+  Eigen::Matrix<SlickScalar, 3, 3> result = Eigen::Matrix<SlickScalar, 3, 3>::Identity();
   result -= m;
   return result;
 }
@@ -48,15 +48,15 @@ SE3  ComputeHandEyeSingle(const std::vector<SE3 > & AB,
     B[i] = AB[i].inverse() * AB[i+1];
   }
   SO3 R = SolveXABX(A, B);
-  Eigen::Matrix<DefaultScalarType, 3, 3> JTJ = Eigen::Matrix<DefaultScalarType, 3, 3>::Zero();
-  Eigen::Matrix<DefaultScalarType, 3, 1> JTE = Eigen::Matrix<DefaultScalarType, 3, 1>::Zero();
+  Eigen::Matrix<SlickScalar, 3, 3> JTJ = Eigen::Matrix<SlickScalar, 3, 3>::Zero();
+  Eigen::Matrix<SlickScalar, 3, 1> JTE = Eigen::Matrix<SlickScalar, 3, 1>::Zero();
   for (unsigned int i = 0; i < A.size(); ++i) {
-    Eigen::Matrix<DefaultScalarType, 3, 3> m =  EyeMinus(B[i].get_rotation().get_matrix());
+    Eigen::Matrix<SlickScalar, 3, 3> m =  EyeMinus(B[i].get_rotation().get_matrix());
     JTJ += m.transpose() * m;
     JTE += m.transpose() * (B[i].get_translation() - R * A[i].get_translation());
   }
-  Eigen::LLT<Eigen::Matrix<DefaultScalarType, 3, 3> > chol(JTJ);
-  Eigen::Matrix<DefaultScalarType, 3, 1> t = chol.solve(JTE);
+  Eigen::LLT<Eigen::Matrix<SlickScalar, 3, 3> > chol(JTJ);
+  Eigen::Matrix<SlickScalar, 3, 1> t = chol.solve(JTE);
   return SE3 (R, t);
 }
 

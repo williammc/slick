@@ -9,12 +9,12 @@ namespace slick {
 
 // Performs Gauss-Newton weighted least squares computation.
 // @param Size The number of dimensions in the system
-// @param Scalar The numerical Scalar used (DefaultScalarType, float etc)
+// @param Scalar The numerical Scalar used (SlickScalar, float etc)
 // @param Decomposition The class used to invert the inverse Covariance matrix
 // (must have one integer size and one typename Scalar template arguments)
 // this is Cholesky by default, but could also be SQSVD
 // @ingroup gEquations
-template <class Scalar = DefaultScalarType, int Size = Eigen::Dynamic,
+template <class Scalar = SlickScalar, int Size = Eigen::Dynamic,
     class Decomposition = Eigen::LDLT<Eigen::Matrix<Scalar, Size, Size> > >
 class SLICK_API WLS {
 public:
@@ -68,7 +68,7 @@ public:
   void add_mJ(Scalar m, const Eigen::MatrixBase<DeriSize1>& J, Scalar weight = 1) {
     // Upper right triangle only, for speed
     for (int r = 0; r < A.rows(); r++) {
-      DefaultScalarType Jw = weight * J(r, 0);
+      SlickScalar Jw = weight * J(r, 0);
       b[r] += m * Jw;
       for (int c = r; c < A.rows(); c++)
         A(r, c) += Jw * J(c, 0);
@@ -114,7 +114,7 @@ public:
                      const Scalar weight) {
     // Upper right triangle only, for speed
     for (int r = 0; r < J1.size(); r++) {
-      DefaultScalarType Jw = weight * J1[r];
+      SlickScalar Jw = weight * J1[r];
       b[r+index1] += m * Jw;
       for (int c = r; c < J1.size(); c++)
         A(r+index1, c+index1).noalias() += Jw * J1[c];

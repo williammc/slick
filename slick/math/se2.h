@@ -1,6 +1,6 @@
 // Copyright 2014 The Slick Authors. All rights reserved.
 #pragma once
-#include "slick/math/common.h"
+#include "slick/datatypes.h"
 #include "slick/math/so2.h"
 #include "slick/slick_api.h"
 
@@ -9,7 +9,7 @@ namespace slick {
 template <typename Precision>
 class SE2Group;
 
-typedef SE2Group<DefaultScalarType> SE2;
+typedef SE2Group<SlickScalar> SE2;
 typedef SE2Group<double> SE2d;
 typedef SE2Group<float> SE2f;
 
@@ -20,7 +20,7 @@ typedef SE2Group<float> SE2f;
 /// three numbers (in the space of the Lie Algebra).
 /// In this class, the first two parameters are a translation vector
 /// while the third is the amount of rotation in the plane as for SO2Group.
-template <typename Precision = DefaultScalarType>
+template <typename Precision = SlickScalar>
 class SE2Group {
   typedef Eigen::Matrix<Precision, 2, 3> MatrixType;
 

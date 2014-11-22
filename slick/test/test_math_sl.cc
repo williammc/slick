@@ -9,36 +9,36 @@ using namespace Eigen;
 using namespace slick;
 #if 0
 void test_sl(){
-  Matrix<DefaultScalarType,8,1> m_test;
+  Matrix<SlickScalar,8,1> m_test;
   m_test << 1,0,-1,0,0,0,0,0;
-  SL<DefaultScalarType,3> h(m_test);
+  SL<SlickScalar,3> h(m_test);
   std::cout << h << std::endl;
   std::cout << h.inverse() << std::endl;
-  std::cout << SL<DefaultScalarType,3>::exp((Eigen::Matrix<DefaultScalarType,8,1>() << -1,0,1,0,0,0,0,0).finished()) << std::endl;
+  std::cout << SL<SlickScalar,3>::exp((Eigen::Matrix<SlickScalar,8,1>() << -1,0,1,0,0,0,0,0).finished()) << std::endl;
   std::cout << h * h.inverse() << std::endl;
   h *= h.inverse();
   cout << h << endl;
 
-  for(int i = 0; i <  SL<DefaultScalarType,3>::dim; ++i)
-    std::cout << "generator " << i << "\n" <<  SL<DefaultScalarType,3>::generator(i) << std::endl;
+  for(int i = 0; i <  SL<SlickScalar,3>::dim; ++i)
+    std::cout << "generator " << i << "\n" <<  SL<SlickScalar,3>::generator(i) << std::endl;
 
-  for(int i = 0; i <  SL<DefaultScalarType,2>::dim; ++i)
-    std::cout << "generator " << i << "\n" <<  SL<DefaultScalarType,2>::generator(i) << std::endl;
+  for(int i = 0; i <  SL<SlickScalar,2>::dim; ++i)
+    std::cout << "generator " << i << "\n" <<  SL<SlickScalar,2>::generator(i) << std::endl;
 
-  std::cout <<  SL<DefaultScalarType,2>::exp(Eigen::Matrix<DefaultScalarType,3,1>(1,2,3)) << std::endl;
+  std::cout <<  SL<SlickScalar,2>::exp(Eigen::Matrix<SlickScalar,3,1>(1,2,3)) << std::endl;
 
-  h =  SL<DefaultScalarType,3>::exp( (Eigen::Matrix<DefaultScalarType,8,1>() << 1,0,-1,0,0,0,1,0).finished());
+  h =  SL<SlickScalar,3>::exp( (Eigen::Matrix<SlickScalar,8,1>() << 1,0,-1,0,0,0,1,0).finished());
 
   std::cout << h << "\n";
-  Eigen::Matrix<DefaultScalarType,3,1> t(0,1,2);
+  Eigen::Matrix<SlickScalar,3,1> t(0,1,2);
   std::cout << "with vector " << t << "\n";
   std::cout << h * t << "\n";
   std::cout << t.transpose() * h << "\n";
 
-  Eigen::Matrix<DefaultScalarType,3,5> m = Eigen::Matrix<DefaultScalarType,3,5>::Zero();
-  m.row(0) = (Eigen::Matrix<DefaultScalarType, 5, 1>() << 0, 1, 2, 3, 4).finished();
-  m.row(1) = (Eigen::Matrix<DefaultScalarType, 5, 1>() << 1, 2, 3, 4, -5).finished();
-  m.row(2) = (Eigen::Matrix<DefaultScalarType, 5, 1>() << 2, 3, 4, 5, 8).finished();
+  Eigen::Matrix<SlickScalar,3,5> m = Eigen::Matrix<SlickScalar,3,5>::Zero();
+  m.row(0) = (Eigen::Matrix<SlickScalar, 5, 1>() << 0, 1, 2, 3, 4).finished();
+  m.row(1) = (Eigen::Matrix<SlickScalar, 5, 1>() << 1, 2, 3, 4, -5).finished();
+  m.row(2) = (Eigen::Matrix<SlickScalar, 5, 1>() << 2, 3, 4, 5, 8).finished();
 
   std::cout << "with matrix " << m << "\n";
   std::cout << h * m << "\n";

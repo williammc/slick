@@ -5,7 +5,7 @@
 namespace slick {
 
 #if defined( _WIN32)
-DefaultScalarType cbrt(DefaultScalarType x) {
+SlickScalar cbrt(SlickScalar x) {
   if (fabs(x) < DBL_EPSILON) return 0.0;
   if (x > 0.0) return pow(x, 1.0/3.0);
   return -pow(-x, 1.0/3.0);
@@ -271,8 +271,8 @@ std::pair<bool, slick::SE3Group<Scalar> > ComputeRobustAbsolutPoseRANSACMLE
 #endif
       try {
 #if 0
-        std::vector<Eigen::Matrix<DefaultScalarType, 3, 3>> Rs;
-        std::vector<Eigen::Matrix<DefaultScalarType, 3, 1>> Ts;
+        std::vector<Eigen::Matrix<SlickScalar, 3, 3>> Rs;
+        std::vector<Eigen::Matrix<SlickScalar, 3, 1>> Ts;
         slick::computeAbsolutePose3Point(
               vObservedPoint2s[0], vObservedPoint2s[1], vObservedPoint2s[1],
               vWPoint3s[0], vWPoint3s[1], vWPoint3s[2], Rs, Ts);
@@ -335,16 +335,16 @@ std::pair<bool, slick::SE3Group<Scalar> > ComputeRobustAbsolutPoseRANSACMLE
 }
 
 // instantiate =================================================================
-template int CalcThreePointPoses(const Eigen::Matrix<DefaultScalarType, 3, 1> xi[],
-                                 const Eigen::Matrix<DefaultScalarType, 2, 1> zi[],
-                                 std::vector<slick::SE3Group<DefaultScalarType> >& poses);
+template int CalcThreePointPoses(const Eigen::Matrix<SlickScalar, 3, 1> xi[],
+                                 const Eigen::Matrix<SlickScalar, 2, 1> zi[],
+                                 std::vector<slick::SE3Group<SlickScalar> >& poses);
 template int CalcThreePointPoses(const Eigen::Matrix<float, 3, 1> xi[],
                                  const Eigen::Matrix<float, 2, 1> zi[],
                                  std::vector<slick::SE3Group<float> >& poses);
 
-template std::pair<bool, slick::SE3Group<DefaultScalarType> > ComputeRobustAbsolutPoseRANSACMLE(
-    std::vector<std::pair<Eigen::Matrix<DefaultScalarType, 4, 1>,
-                        Eigen::Matrix<DefaultScalarType, 2, 1> > > &observations);
+template std::pair<bool, slick::SE3Group<SlickScalar> > ComputeRobustAbsolutPoseRANSACMLE(
+    std::vector<std::pair<Eigen::Matrix<SlickScalar, 4, 1>,
+                        Eigen::Matrix<SlickScalar, 2, 1> > > &observations);
 template std::pair<bool, slick::SE3Group<float> > ComputeRobustAbsolutPoseRANSACMLE(
     std::vector<std::pair<Eigen::Matrix<float, 4, 1>,
                         Eigen::Matrix<float, 2, 1> > > &observations);

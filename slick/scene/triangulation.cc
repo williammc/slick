@@ -28,9 +28,9 @@ std::pair<Eigen::Matrix<Scalar, 3, 1>,Scalar> triangulate(
 }
 
 // instantiate =================================================================
-template std::pair<Eigen::Matrix<DefaultScalarType, 3, 1>,DefaultScalarType> triangulate(
-    const Eigen::Matrix<DefaultScalarType, 2, 1>& point1, const Eigen::Matrix<DefaultScalarType, 2, 1>& point2,
-    SE3Group<DefaultScalarType> pose1,  SE3Group<DefaultScalarType> pose2);
+template std::pair<Eigen::Matrix<SlickScalar, 3, 1>,SlickScalar> triangulate(
+    const Eigen::Matrix<SlickScalar, 2, 1>& point1, const Eigen::Matrix<SlickScalar, 2, 1>& point2,
+    SE3Group<SlickScalar> pose1,  SE3Group<SlickScalar> pose2);
 template std::pair<Eigen::Matrix<float, 3, 1>,float> triangulate(
     const Eigen::Matrix<float, 2, 1>& point1, const Eigen::Matrix<float, 2, 1>& point2,
     SE3Group<float> pose1,  SE3Group<float> pose2);

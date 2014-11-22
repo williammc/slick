@@ -5,8 +5,8 @@
 
 using std::vector;
 namespace slick {
-Eigen::Matrix<DefaultScalarType, 3, 3> QuaternionToMatrix(const Eigen::Matrix<DefaultScalarType, 4, 1> & q) {
-  Eigen::Matrix<DefaultScalarType, 3, 3> result;
+Eigen::Matrix<SlickScalar, 3, 3> QuaternionToMatrix(const Eigen::Matrix<SlickScalar, 4, 1> & q) {
+  Eigen::Matrix<SlickScalar, 3, 3> result;
   const int w = 0, x = 1, y = 2, z = 3;
   result(0, 0) = q[w]*q[w] + q[x]*q[x] - q[y]*q[y] - q[z]*q[z];
   result(0, 1) = 2*(q[x]*q[y] - q[w]*q[z]);
@@ -20,12 +20,12 @@ Eigen::Matrix<DefaultScalarType, 3, 3> QuaternionToMatrix(const Eigen::Matrix<De
   return result;
 }
 
-SO3 ComputeOrientation(const std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> > & a,
-                              const std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> > & b) {
+SO3 ComputeOrientation(const std::vector<Eigen::Matrix<SlickScalar, 3, 1> > & a,
+                              const std::vector<Eigen::Matrix<SlickScalar, 3, 1> > & b) {
   const size_t N = a.size();
   // compute cross correlations
   const int x = 0, y = 1, z = 2;
-  Eigen::Matrix<DefaultScalarType, 3, 3> s = Eigen::Matrix<DefaultScalarType, 3, 3>::Zero();
+  Eigen::Matrix<SlickScalar, 3, 3> s = Eigen::Matrix<SlickScalar, 3, 3>::Zero();
   for (unsigned int i = 0; i < N; i++) {
     s += a[i] * b[i].transpose();
   }
@@ -45,12 +45,12 @@ SO3 ComputeOrientation(const std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> 
 
   // eigenvalue decomposition to find eigenvector to largest eigenvalue
   Eigen::EigenSolver<Eigen::Matrix4d> ev(M);
-  Eigen::Matrix<DefaultScalarType, 4, 1> evals = ev.eigenvalues().real();
+  Eigen::Matrix<SlickScalar, 4, 1> evals = ev.eigenvalues().real();
   int index = 0;
   for (unsigned int i = index+1; i < 4; i++)
     if (evals[i] > evals[index])
       index = i;
-  Eigen::Matrix<DefaultScalarType, 4, 1> evec = ev.eigenvectors().col(index).real();
+  Eigen::Matrix<SlickScalar, 4, 1> evec = ev.eigenvectors().col(index).real();
   SO3  result;
   result = QuaternionToMatrix(evec);
   return result;
@@ -58,22 +58,22 @@ SO3 ComputeOrientation(const std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> 
 
 // computes the orientation from (e1,e2,e3) -> (a,(a^b)^a,a^b),
 // which means that b the second vector is in the a, b plane
-static inline SO3 canonicalOrientation(const Eigen::Matrix<DefaultScalarType, 3, 1> & a,
-                                         const Eigen::Matrix<DefaultScalarType, 3, 1> & b) {
-  Eigen::Matrix<DefaultScalarType, 3, 1> n = a.cross(b);
+static inline SO3 canonicalOrientation(const Eigen::Matrix<SlickScalar, 3, 1> & a,
+                                         const Eigen::Matrix<SlickScalar, 3, 1> & b) {
+  Eigen::Matrix<SlickScalar, 3, 1> n = a.cross(b);
   if (n.squaredNorm() < 1e-30)
     return SO3();
-  Eigen::Matrix<DefaultScalarType, 3, 3> result;
+  Eigen::Matrix<SlickScalar, 3, 3> result;
   result.col(0) = a.normalized();
   result.col(2) = n.normalized();
   result.col(1) = result.col(2).cross(result.col(0));
   return SO3 (result);
 }
 
-SO3 ComputeOrientation(const Eigen::Matrix<DefaultScalarType, 3, 1> & a1,
-                              const Eigen::Matrix<DefaultScalarType, 3, 1> & b1,
-                              const Eigen::Matrix<DefaultScalarType, 3, 1> & a2,
-                              const Eigen::Matrix<DefaultScalarType, 3, 1> & b2) {
+SO3 ComputeOrientation(const Eigen::Matrix<SlickScalar, 3, 1> & a1,
+                              const Eigen::Matrix<SlickScalar, 3, 1> & b1,
+                              const Eigen::Matrix<SlickScalar, 3, 1> & a2,
+                              const Eigen::Matrix<SlickScalar, 3, 1> & b2) {
   SO3  r1 = canonicalOrientation(a1, a2);
   SO3  r2 = canonicalOrientation(b1, b2);
   const SO3  rAB = r2 * r1.inverse();
@@ -84,11 +84,11 @@ SO3 ComputeOrientation(const Eigen::Matrix<DefaultScalarType, 3, 1> & a1,
   return SO3 ::exp(diff.ln() * 0.5) * rAB;
 }
 
-SE3 ComputeAbsoluteOrientation(const std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> > & a,
-                                      const std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> > & b) {
+SE3 ComputeAbsoluteOrientation(const std::vector<Eigen::Matrix<SlickScalar, 3, 1> > & a,
+                                      const std::vector<Eigen::Matrix<SlickScalar, 3, 1> > & b) {
   // std::assert(a.size() <= b.size());
   const size_t N = a.size();
-  Eigen::Matrix<DefaultScalarType, 3, 1> ma = Eigen::Matrix<DefaultScalarType, 3, 1>::Zero(), mb = Eigen::Matrix<DefaultScalarType, 3, 1>::Zero();
+  Eigen::Matrix<SlickScalar, 3, 1> ma = Eigen::Matrix<SlickScalar, 3, 1>::Zero(), mb = Eigen::Matrix<SlickScalar, 3, 1>::Zero();
   // compute centroids
   for (unsigned int i = 0; i < N; i++) {
     ma += a[i];
@@ -98,7 +98,7 @@ SE3 ComputeAbsoluteOrientation(const std::vector<Eigen::Matrix<DefaultScalarType
   mb /= N;
 
   // compute shifted locations
-  std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> > ap(N), bp(N);
+  std::vector<Eigen::Matrix<SlickScalar, 3, 1> > ap(N), bp(N);
   for (unsigned int i = 0; i < N; i++) {
     ap[i] = a[i] - ma;
     bp[i] = b[i] - ma;
@@ -106,7 +106,7 @@ SE3 ComputeAbsoluteOrientation(const std::vector<Eigen::Matrix<DefaultScalarType
 
   // put resulting transformation together
   SO3 rot = ComputeOrientation(ap, bp);
-  Eigen::Matrix<DefaultScalarType, 3, 1> trans = mb - rot * ma;
+  Eigen::Matrix<SlickScalar, 3, 1> trans = mb - rot * ma;
   return SE3(rot, trans);
 }
 
@@ -115,7 +115,7 @@ SO3 ComputeMeanOrientation(const std::vector<SO3 > & r) {
   std::vector<SO3 > rt(N);
   SO3  base = r.front();
   SO3  baseInv = base.inverse();
-  Eigen::Matrix<DefaultScalarType, 3, 1> center = Eigen::Matrix<DefaultScalarType, 3, 1>::Zero();
+  Eigen::Matrix<SlickScalar, 3, 1> center = Eigen::Matrix<SlickScalar, 3, 1>::Zero();
   for (unsigned int i = 0; i < N; i++) {
     rt[i] = r[i] * baseInv;
     center += rt[i].ln();

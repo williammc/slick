@@ -12,6 +12,11 @@ if(NOT CMAKER_ROOT)
 endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKER_ROOT}/modules ${CMAKER_ROOT}/utils)
 
+set(Slick_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+if(NOT THE_PROJECT_ROOT OR THE_PROJECT_ROOT STREQUAL "")
+  set(THE_PROJECT_ROOT ${Slick_ROOT_DIR})
+endif()
+
 include(CMakerCommonUtil)  # include useful macros
 include(CMakerCommonSettings)
 
@@ -22,12 +27,7 @@ cmaker_print_status("Welcome! Slick version ${Slick_COLOR_BLUE}${Slick_WORLD_VER
 cmaker_print_status("Slick cmake module paths: ${Slick_COLOR_BLUE}${CMAKE_MODULE_PATH}${Slick_COLOR_RESET}")
 cmaker_detect_os()
 
-# common settings
-set(Slick_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-cmaker_print_status("Slick_ROOT_DIR:${Slick_COLOR_BLUE}${Slick_ROOT_DIR}${Slick_COLOR_RESET}")
-
 set(Slick_CXX_FLAGS)
-
 add_definitions(-DSlick_ROOT_DIR="${Slick_ROOT_DIR}")
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")

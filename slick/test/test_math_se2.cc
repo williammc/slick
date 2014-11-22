@@ -12,21 +12,21 @@ using namespace slick;
 void test_constructors(){
   cout << "SE2():\n" << SE2() << endl;
   SO2 so2;
-  Matrix<DefaultScalarType,2,1> v2=Matrix<DefaultScalarType,2,1>::Zero();
+  Matrix<SlickScalar,2,1> v2=Matrix<SlickScalar,2,1>::Zero();
   v2[0]=1;
   cout << "SE2(so2,v2):\n" << SE2(so2,v2) << endl;
-  Matrix<DefaultScalarType,3,1> v3 = Matrix<DefaultScalarType,3,1>::Zero();
+  Matrix<SlickScalar,3,1> v3 = Matrix<SlickScalar,3,1>::Zero();
   v3[0]=1;
   cout << "SE2(v3):\n" << SE2(v3) << endl;
 }
 
 void test_operators(){
   SO2 so2;
-  Matrix<DefaultScalarType,3,1> v3 = Matrix<DefaultScalarType,3,1>::Zero();
+  Matrix<SlickScalar,3,1> v3 = Matrix<SlickScalar,3,1>::Zero();
   v3[0]=1;
-  Matrix<DefaultScalarType,3,1> v3Minus = -v3;
+  Matrix<SlickScalar,3,1> v3Minus = -v3;
   cout << "SE2(v3)*SE2(-v3):\n" << SE2(v3)*SE2(v3Minus) << endl;
-  Matrix<DefaultScalarType,3,3> m3 = Matrix<DefaultScalarType,3,3>::Identity();
+  Matrix<SlickScalar,3,3> m3 = Matrix<SlickScalar,3,3>::Identity();
   cout << "SE2(v3)*m3:\n" << SE2(v3)*m3 << endl;
   cout << "m3*SE2(v3):\n" << endl;
   cout << m3*SE2(v3) << endl;

@@ -18,7 +18,7 @@ namespace slick {
 /// with vector u is along hirozontal left-right, vector v is vertical top-down
 /// Responsibilities: Projecttion(3D to 2D) &
 /// Unprojection(2D to 3D, at camera plane where Zc=1.)
-template<typename Precision = DefaultScalarType>
+template<typename Precision = SlickScalar>
 class SLICK_API PoliCamera {
  public:
   typedef std::shared_ptr<PoliCamera<Precision> > Ptr;
@@ -87,10 +87,10 @@ class SLICK_API PoliCamera {
     int old_w = width_, old_h = height_;
     width_ = w;
     height_ = h;
-    fx_ *= static_cast<DefaultScalarType>(w)/old_w;
-    fy_ *= static_cast<DefaultScalarType>(h)/old_h;
-    cx_ *= static_cast<DefaultScalarType>(w)/old_w;
-    cy_ *= static_cast<DefaultScalarType>(h)/old_h;
+    fx_ *= static_cast<SlickScalar>(w)/old_w;
+    fy_ *= static_cast<SlickScalar>(h)/old_h;
+    cx_ *= static_cast<SlickScalar>(w)/old_w;
+    cy_ *= static_cast<SlickScalar>(h)/old_h;
     UpdateInternalParams();
   }
 
@@ -182,13 +182,13 @@ inline Eigen::Matrix<Precision, 2, 1> PoliCamera<Precision>::UnProject(
   v2Point[1] = (v2Point[1]-cy_)/fy_;
   /// employ libcvd's implementation
   /// first guess
-  DefaultScalarType scale = v2Point.squaredNorm();
+  SlickScalar scale = v2Point.squaredNorm();
 
   /// iterations of Newton-Rapheson
   for (int i = 0; i < 3 ; ++i) {  /// 3 iteration is good enough in certain range
-    DefaultScalarType temp = 1 + scale*(k1_+k2_*scale);
-    DefaultScalarType error = v2Point.squaredNorm() - scale*temp*temp;
-    DefaultScalarType deriv = temp*(temp+2*scale*(k1_ + 2*k2_*scale));
+    SlickScalar temp = 1 + scale*(k1_+k2_*scale);
+    SlickScalar error = v2Point.squaredNorm() - scale*temp*temp;
+    SlickScalar deriv = temp*(temp+2*scale*(k1_ + 2*k2_*scale));
     scale += error/deriv;
   }
   v2Point = v2Point/static_cast<Precision>((1 + scale*(k1_ + k2_*scale)));

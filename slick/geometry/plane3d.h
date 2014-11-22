@@ -11,31 +11,31 @@ namespace slick {
 
 struct SLICK_API Plane3d {
   Plane3d() {
-    point = Eigen::Matrix<DefaultScalarType, 3, 1>::Zero();
-    normal = Eigen::Matrix<DefaultScalarType, 3, 1>::Zero();
+    point = Eigen::Matrix<SlickScalar, 3, 1>::Zero();
+    normal = Eigen::Matrix<SlickScalar, 3, 1>::Zero();
     d = 0;
   }
 
-  Plane3d(const Eigen::Matrix<DefaultScalarType, 3, 1> &p1,
-          const Eigen::Matrix<DefaultScalarType, 3, 1> &p2,
-          const Eigen::Matrix<DefaultScalarType, 3, 1> &p3) {
+  Plane3d(const Eigen::Matrix<SlickScalar, 3, 1> &p1,
+          const Eigen::Matrix<SlickScalar, 3, 1> &p2,
+          const Eigen::Matrix<SlickScalar, 3, 1> &p3) {
     point = p1;
     normal = ((p1 - p2).cross(p1 - p3)).normalized();
     d = - (normal.dot(point));
   }
 
-  Plane3d(const Eigen::Matrix<DefaultScalarType, 3, 1> &point,
-          const Eigen::Matrix<DefaultScalarType, 3, 1> &normal)
+  Plane3d(const Eigen::Matrix<SlickScalar, 3, 1> &point,
+          const Eigen::Matrix<SlickScalar, 3, 1> &normal)
     : point(point), normal(normal.normalized()) {
     d = - (normal.dot(point));
   }
 
   // Given plane equation ax + by + cz + d = 0
-  Plane3d(const Eigen::Matrix<DefaultScalarType, 4, 1> &v4_plane) {
+  Plane3d(const Eigen::Matrix<SlickScalar, 4, 1> &v4_plane) {
     SetEquation(v4_plane);
   }
 
-  void SetEquation(const Eigen::Matrix<DefaultScalarType, 4, 1> &v4_plane) {
+  void SetEquation(const Eigen::Matrix<SlickScalar, 4, 1> &v4_plane) {
     normal = v4_plane.segment<3>(0).normalized();
     d = v4_plane[3]/v4_plane.segment<3>(0).norm();
     if (d < 0) {  // normalize show that normal point toward origin
@@ -43,39 +43,39 @@ struct SLICK_API Plane3d {
       normal = - normal;
     }
     if (normal[0] != 0.0) {
-      DefaultScalarType x = -(normal[1] + normal[2] + d)/normal[0];
+      SlickScalar x = -(normal[1] + normal[2] + d)/normal[0];
       point << x, 1, 1;
     } else if(normal[1] != 0.0) {
-      DefaultScalarType y = -(normal[0] + normal[2] + d)/normal[1];
+      SlickScalar y = -(normal[0] + normal[2] + d)/normal[1];
       point << 1, y, 1;
     } else {
-      DefaultScalarType z = -(normal[0] + normal[1] + d)/normal[2];
+      SlickScalar z = -(normal[0] + normal[1] + d)/normal[2];
       point << 1, 1, z;
     }
   }
 
-  static std::pair<std::vector<unsigned int>, DefaultScalarType> fit_plane(
-      const std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> >& points, Plane3d &plane);
+  static std::pair<std::vector<unsigned int>, SlickScalar> fit_plane(
+      const std::vector<Eigen::Matrix<SlickScalar, 3, 1> >& points, Plane3d &plane);
 
   // fit dominant plane containing: ZERO, 1, or 2 anchor points
   // @return (inlier points, average squared error)
-  static std::pair<std::vector<unsigned int>, DefaultScalarType> fit_plane_advanced(
-    const std::vector<Eigen::Matrix<DefaultScalarType, 3, 1> >& points, Plane3d& plane,
-    Eigen::Matrix<DefaultScalarType, 3, 1>* anchor_point1 = NULL, Eigen::Matrix<DefaultScalarType, 3, 1>* anchor_point2 = NULL);
+  static std::pair<std::vector<unsigned int>, SlickScalar> fit_plane_advanced(
+    const std::vector<Eigen::Matrix<SlickScalar, 3, 1> >& points, Plane3d& plane,
+    Eigen::Matrix<SlickScalar, 3, 1>* anchor_point1 = NULL, Eigen::Matrix<SlickScalar, 3, 1>* anchor_point2 = NULL);
 
-  DefaultScalarType dist_to_point(const Eigen::Matrix<DefaultScalarType, 3, 1> &pt) const {
+  SlickScalar dist_to_point(const Eigen::Matrix<SlickScalar, 3, 1> &pt) const {
     return fabs(normal.dot(point - pt));
   }
 
   bool intersect_line(slick::Line3d const&ln,
-                         Eigen::Matrix<DefaultScalarType, 3, 1> &intersection) const {
-    Eigen::Matrix<DefaultScalarType, 3, 1> lv = ln.line_vector;
+                         Eigen::Matrix<SlickScalar, 3, 1> &intersection) const {
+    Eigen::Matrix<SlickScalar, 3, 1> lv = ln.line_vector;
 
     if (fabs(lv.dot(normal)) < 1e-12)
       return false;
 
-    Eigen::Matrix<DefaultScalarType, 3, 1> lp = ln.point1;
-    DefaultScalarType t =  (point.dot(normal) - normal.dot(lp)) / (normal.dot(lv));
+    Eigen::Matrix<SlickScalar, 3, 1> lp = ln.point1;
+    SlickScalar t =  (point.dot(normal) - normal.dot(lp)) / (normal.dot(lv));
     intersection = lp + t * lv;
     return true;
   }
@@ -106,17 +106,17 @@ struct SLICK_API Plane3d {
     return true;
   }
 
-  Eigen::Matrix<DefaultScalarType, 3, 1> project_point(const Eigen::Matrix<DefaultScalarType, 3, 1> &pt) const {
+  Eigen::Matrix<SlickScalar, 3, 1> project_point(const Eigen::Matrix<SlickScalar, 3, 1> &pt) const {
     Line3d ln(pt, pt + normal);
-    Eigen::Matrix<DefaultScalarType, 3, 1> intp;
+    Eigen::Matrix<SlickScalar, 3, 1> intp;
     intersect_line(ln, intp);
     return intp;
   }
 
   bool is_same(const Plane3d& another_plane,
-               DefaultScalarType angle_threshold = 5, DefaultScalarType dist_threshold = 0.01) const {
+               SlickScalar angle_threshold = 5, SlickScalar dist_threshold = 0.01) const {
     if (is_parallel(another_plane, angle_threshold)) {
-      Eigen::Matrix<DefaultScalarType, 3, 1> p = project_point(another_plane.point);
+      Eigen::Matrix<SlickScalar, 3, 1> p = project_point(another_plane.point);
       if(((p-another_plane.point).norm() < dist_threshold) || dist_threshold < 0)
         return true;
     }
@@ -124,7 +124,7 @@ struct SLICK_API Plane3d {
   }
 
   bool is_parallel(const Plane3d& another_plane,
-                   DefaultScalarType angle_threshold = 5) const{
+                   SlickScalar angle_threshold = 5) const{
     if (std::cos(std::fabs(normal.dot(another_plane.normal))) >
         std::cos(M_PI*angle_threshold/180))  {
         return true;
@@ -132,9 +132,9 @@ struct SLICK_API Plane3d {
     return false;
   }
 
-  static const DefaultScalarType epsilon;  // plane precision
-  Eigen::Matrix<DefaultScalarType, 3, 1> point;
-  Eigen::Matrix<DefaultScalarType, 3, 1> normal;
-  DefaultScalarType d;
+  static const SlickScalar epsilon;  // plane precision
+  Eigen::Matrix<SlickScalar, 3, 1> point;
+  Eigen::Matrix<SlickScalar, 3, 1> normal;
+  SlickScalar d;
 };
 }  // namespace slick
