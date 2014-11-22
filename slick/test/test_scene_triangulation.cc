@@ -8,7 +8,7 @@
 
 using namespace std;
 using namespace Eigen;
-using namespace look3d;
+using namespace slick;
 
 int test_triangulate() {
   cout << "generting 3D points..." << endl;

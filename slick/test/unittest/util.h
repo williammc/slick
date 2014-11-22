@@ -1,12 +1,11 @@
-#ifndef LOOK3D_MATH_UNITTEST_UTIL_H_
-#define LOOK3D_MATH_UNITTEST_UTIL_H_
+#pragma once
 #include <memory>
 #include <random>
 #include <gtest/gtest.h>
 
 #define NSAMPLES 1000
 
-namespace look3d {
+namespace slick {
 
 template <typename T>
 inline std::pair<std::shared_ptr<std::mt19937>,
@@ -50,5 +49,4 @@ inline T Gap() {
   if (typeid(T) == typeid(double)) return double(1.e-9);
   if (typeid(T) == typeid(float)) return float(1.e-6);
 }
-}  // namespace look3d
-#endif  // LOOK3D_MATH_UNITTEST_UTIL_H_
+}  // namespace slick

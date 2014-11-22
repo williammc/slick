@@ -1,8 +1,8 @@
-// Copyright 2012, 2013, 2014 The LooK3D Authors. All rights reserved.
-#include "geometry/plane3d.h"
-#include "math/mestimator.h"
+// Copyright 2014 The Slick Authors. All rights reserved.
+#include "slick/geometry/plane3d.h"
+#include "slick/util/mestimator.h"
 
-namespace look3d {
+namespace slick {
 const DefaultScalarType Plane3d::epsilon = 1.e-30;
 
 std::pair<std::vector<unsigned int>, DefaultScalarType> Plane3d::fit_plane(
@@ -196,4 +196,4 @@ std::pair<std::vector<unsigned int>, DefaultScalarType> Plane3d::fit_plane_advan
 
   return std::make_pair(inlier_indices, sum_error/inlier_indices.size());
 }
-}  // namespace look3d
+}  // namespace slick

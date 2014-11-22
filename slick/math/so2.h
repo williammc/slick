@@ -1,13 +1,12 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_MATH_SO2_H_
-#define LOOK3D_MATH_SO2_H_
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
 #include <Eigen/Core>
 #include <type_traits>
-
 #include <Eigen/Eigen>
-#include "math/common.h"
+#include "slick/datatypes.h"
+#include "slick/slick_api.h"
 
-namespace look3d {
+namespace slick {
 
 template <typename Precision>
 class SO2Group;
@@ -22,7 +21,7 @@ typedef SO2Group<float> SO2f;
 /// matrices are members of the Special Orthogonal Lie group SO2Group.
 /// This group can be parameterised with one number (the rotation angle).
 template <typename Precision = DefaultScalarType>
-class SO2Group {
+class SLICK_API SO2Group {
   typedef Eigen::Matrix<Precision, 2, 2> MatrixType;
 
  public:
@@ -159,5 +158,4 @@ inline typename Eigen::ProductReturnType<
     const SO2Group<Precision> &rhs) {
   return lhs * rhs.get_matrix();
 }
-}       // namespace look3d
-#endif  // LOOK3D_MATH_SO2_H_
+}       // namespace slick

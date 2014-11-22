@@ -1,12 +1,11 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_GEOMETRY_LINE3D_H_
-#define LOOK3D_GEOMETRY_LINE3D_H_
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
 #include <Eigen/Dense>
-#include "math/common.h"
-#include "geometry/look3d_geometry_api.h"
+#include "slick/datatypes.h"
+#include "slick/slick_api.h"
 
-namespace look3d {
-struct LOOK3D_GEOMETRY_API Line3d {
+namespace slick {
+struct SLICK_API Line3d {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Line3d() {}
@@ -76,5 +75,4 @@ struct LOOK3D_GEOMETRY_API Line3d {
 
   bool is_bounded;
 };
-}  // namespace look3d
-#endif  // LOOK3D_GEOMETRY_LINE3D_H_
+}  // namespace slick

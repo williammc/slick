@@ -1,16 +1,15 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_MATH_SL_H_
-#define LOOK3D_MATH_SL_H_
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
 
 #include <cassert>
 
 #include <Eigen/Eigen>
 #include <Eigen/MatrixFunctions>
-#include "math/look3d_math_api.h"
+#include "slick/slick_api.h"
 
-#include "core/common.h"
+#include "slick/datatypes.h"
 
-namespace look3d {
+namespace slick {
 
 template <typename P, int N> class SL;
 
@@ -27,7 +26,7 @@ template <typename P, int N> class SL;
 // This choice represents the fact that SL(n) can be interpreted as the product
 // of all symmetric matrices with det() = 1 times SO(n).
 template <typename Precision = DefaultScalarType, int N = Eigen::Dynamic>
-class SL {
+class SLICK_API SL {
   typedef Eigen::Matrix<Precision, N, N> MatrixType;
 
  public:
@@ -189,5 +188,4 @@ inline typename Eigen::ProductReturnType< OtherDerived, Eigen::Matrix<Precision,
   operator * (const Eigen::MatrixBase<OtherDerived>& lhs, const SL<Precision, N>& rhs) {
   return lhs * rhs.getMatrix();
 }
-}  // namespace look3d
-#endif  // LOOK3D_MATH_SL_H_
+}  // namespace slick

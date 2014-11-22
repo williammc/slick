@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <Eigen/Core>
 
-namespace look3d {
+namespace slick {
 const DefaultScalarType Line2d::epsilon = 1.e-30;
 
 Line2d::Line2d(const Eigen::Vector2d& pt1, const Eigen::Vector2d& pt2,
@@ -129,4 +129,4 @@ void Line2d::CalcPointsFromLineEquation(int offset) {
   calc_line_vector();
   is_bounded = false;
 }
-}  // namespace look3d
+}  // namespace slick

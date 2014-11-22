@@ -6,7 +6,7 @@
 
 using namespace std;
 using namespace Eigen;
-using namespace look3d;
+using namespace slick;
 #if 0
 void test_sl(){
   Matrix<DefaultScalarType,8,1> m_test;

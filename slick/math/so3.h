@@ -1,6 +1,5 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_MATH_SO3_H_
-#define LOOK3D_MATH_SO3_H_
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
 #include <cassert>
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
@@ -8,9 +7,10 @@
 #include <math.h>
 
 #include <Eigen/Core>
-#include "math/common.h"
+#include "slick/datatypes.h"
+#include "slick/slick_api.h"
 
-namespace look3d {
+namespace slick {
 
 template <typename Precision> class SO3Group;
 template <typename Precision> class SE3Group;
@@ -30,7 +30,7 @@ typedef SO3Group<float> SO3f;
 /// Exponentiating this vector gives the matrix,
 /// and the logarithm of the matrix gives this vector.
 template <typename Precision = DefaultScalarType>
-class SO3Group {
+class SLICK_API SO3Group {
   typedef Eigen::Matrix<Precision, 3, 3> MatrixType;
 
  public:
@@ -334,5 +334,4 @@ inline typename Eigen::ProductReturnType< OtherDerived, Eigen::Matrix<Precision,
     const Eigen::MatrixBase<OtherDerived>& lhs, const SO3Group<Precision>& rhs) {
   return lhs * rhs.get_matrix();
 }
-}  // end namespace look3d
-#endif  // LOOK3D_MATH_SO3_H_
+}  // end namespace slick

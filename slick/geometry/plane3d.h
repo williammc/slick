@@ -1,17 +1,15 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_GEOMETRY_PLANE3D_H_
-#define LOOK3D_GEOMETRY_PLANE3D_H_
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
 
 #include <vector>
 #include <Eigen/Dense>
-#include "geometry/line3d.h"
-#include "math/common.h"
-#include "core/serialization.h"
-#include "geometry/look3d_geometry_api.h"
+#include "slick/geometry/line3d.h"
+#include "slick/datatypes.h"
+#include "slick/slick_api.h"
 
-namespace look3d {
+namespace slick {
 
-struct LOOK3D_GEOMETRY_API Plane3d {
+struct SLICK_API Plane3d {
   Plane3d() {
     point = Eigen::Matrix<DefaultScalarType, 3, 1>::Zero();
     normal = Eigen::Matrix<DefaultScalarType, 3, 1>::Zero();
@@ -69,7 +67,7 @@ struct LOOK3D_GEOMETRY_API Plane3d {
     return fabs(normal.dot(point - pt));
   }
 
-  bool intersect_line(look3d::Line3d const&ln,
+  bool intersect_line(slick::Line3d const&ln,
                          Eigen::Matrix<DefaultScalarType, 3, 1> &intersection) const {
     Eigen::Matrix<DefaultScalarType, 3, 1> lv = ln.line_vector;
 
@@ -139,5 +137,4 @@ struct LOOK3D_GEOMETRY_API Plane3d {
   Eigen::Matrix<DefaultScalarType, 3, 1> normal;
   DefaultScalarType d;
 };
-}  // namespace look3d
-#endif  // LOOK3D_GEOMETRY_PLANE3D_H_
+}  // namespace slick

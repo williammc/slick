@@ -1,7 +1,7 @@
 // Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#include "math/mestimator.h"
+#include "slick/util/mestimator.h"
 
-namespace look3d {
+namespace slick {
 
 template <typename Precision>
 LeastSquares<Precision>::LeastSquares() : sigmaSquared(0) {}
@@ -87,4 +87,4 @@ template T Huber<T>::weight(T) const;
 INSTANTIATE_MESTIMATORS(float)
 INSTANTIATE_MESTIMATORS(double)
 
-}  // namespace look3d
+}  // namespace slick

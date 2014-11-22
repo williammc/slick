@@ -1,14 +1,13 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_GEOMETRY_HANDEYE_H_
-#define LOOK3D_GEOMETRY_HANDEYE_H_
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
 #include <utility>
 #include <vector>
 #include <Eigen/Cholesky>
 
-#include "geometry/abs_orientation.h"
-#include "math/so3.h"
+#include "slick/scene/abs_orientation.h"
+#include "slick/math/so3.h"
 
-namespace look3d {
+namespace slick {
 
 static inline Eigen::Matrix<DefaultScalarType, 3, 1> GetRotationVector(const SO3  & r) {
   const Eigen::Matrix<DefaultScalarType, 3, 3> & my_matrix = r.get_matrix();
@@ -84,5 +83,4 @@ std::pair<SO3 , SO3 > ComputeHandEye(const std::vector<SO3 > &AB,
   return std::make_pair(ComputeHandEyeSingle(AB, CD),
                         ComputeHandEyeSingle(CD, AB));
 }
-}  // namespace look3d
-#endif  // LOOK3D_GEOMETRY_HANDEYE_H_
+}  // namespace slick

@@ -14,7 +14,7 @@
 
 #include "config.h"
 
-using namespace look3d;
+using namespace slick;
 using namespace std;
 
 int test_computeHandEye() {

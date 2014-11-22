@@ -1,16 +1,15 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
+// Copyright 2014 The Slick Authors. All rights reserved.
 // I'm camera man, in mathematical aspect.
 // You can know me more through references & description below.
 // Welcome suggestions & comments about camera's models & calibration techniques.
-#ifndef LOOK3D_CONSTRUCT_POLI_CAMERA_H_
-#define LOOK3D_CONSTRUCT_POLI_CAMERA_H_
+#pragma once
 #include <memory>
 #include <Eigen/Eigen>
-#include "math/se3.h"
-#include "math/utilities.h"
-#include "math/look3d_math_api.h"
+#include "slick/math/se3.h"
+#include "slick/util/common.h"
+#include "slick/slick_api.h"
 
-namespace look3d {
+namespace slick {
 
 /// Polynomial Camera model is Pin Hole projection model
 /// applying Taylor series for radial distortion
@@ -20,7 +19,7 @@ namespace look3d {
 /// Responsibilities: Projecttion(3D to 2D) &
 /// Unprojection(2D to 3D, at camera plane where Zc=1.)
 template<typename Precision = DefaultScalarType>
-class LOOK3D_MATH_API PoliCamera {
+class SLICK_API PoliCamera {
  public:
   typedef std::shared_ptr<PoliCamera<Precision> > Ptr;
   typedef std::shared_ptr<const PoliCamera<Precision> > ConstPtr;
@@ -218,5 +217,4 @@ inline Eigen::Matrix<Precision, 2, 1> PoliCamera<Precision>::UnProjectLinear(
   v2Point[1] = (v2Point[1]-cy_)/fy_;
   return v2Point;
 }
-}  // end namespace look3d
-#endif  // LOOK3D_CONSTRUCT_POLI_CAMERA_H_
+}  // end namespace slick

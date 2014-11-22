@@ -1,18 +1,18 @@
-cmake_minimum_required(VERSION 2.8)
-project(look3d_math_test)
+cmake_minimum_required(VERSION 2.8.9)
+project(slick_test)
 
 # common settings
-look3d_common_build_setting()
+cmaker_common_build_setting()
 
 ##==============================================================================
-set(ALL_LIBRARIES ${LOOK3D_LIBRARIES} ${LOOK3D_EXTERNAL_LIBS})
+set(ALL_LIBRARIES ${Slick_LIBS} ${LOOK3D_EXTERNAL_LIBS})
 ##==============================================================================
 ##  executables
-
-set(math_tests test_se2 test_se3 test_sl test_so2 test_so3)
-foreach(test ${math_tests})
-  look3d_add_test(${test} ${test}.cc)
-  set_property(TARGET ${test} PROPERTY FOLDER "look3d_tests/math")
+file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cc)
+foreach(filename ${test_sources})
+  get_filename_component(test_name ${filename} NAME_WE)
+  cmaker_add_test(${test_name} ${test_name}.cc)
+  set_property(TARGET ${test_name} PROPERTY FOLDER "slick_libs/tests")
 endforeach()
 
 add_subdirectory(unittest)

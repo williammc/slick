@@ -8,7 +8,7 @@
 #include <math/utilities.h>
 #include <track/types.h>
 
-namespace look3d {
+namespace slick {
 
 // holding data for synthesis point
 struct SynthesisPoint {
@@ -195,5 +195,5 @@ void drawCross(cv::Mat& image, cv::Point& center, int radius,
   cv::Point right(center); right.x +=radius;
   cv::line(image, top, bottom, color, thick);
 }
-}  // namespace look3d
+}  // namespace slick
 #endif  // LOOK3D_TEST_HELPERS_H_

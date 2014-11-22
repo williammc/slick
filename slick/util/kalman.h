@@ -1,10 +1,9 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_MATH_KALMAN_H_
-#define LOOK3D_MATH_KALMAN_H_
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
 
 #include <Eigen/Cholesky>
 
-namespace look3d {
+namespace slick {
 template<typename DeriSMxSM, typename DeriMMx1,
          typename DeriMMxSM, typename DeriMMxMM>
 Eigen::Matrix<typename DeriSMxSM::Scalar, DeriSMxSM::RowsAtCompileTime, 1>
@@ -26,5 +25,4 @@ kalman_update(Eigen::MatrixBase<DeriSMxSM> & P,
   P = P - P12 * R.solve(P12.transpose());
   return P12 * R.solve(innovation);
 }
-}  // namespace look3d
-#endif  // LOOK3D_MATH_KALMAN_H_
+}  // namespace slick

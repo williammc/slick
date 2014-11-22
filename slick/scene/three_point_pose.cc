@@ -1,8 +1,8 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#include <geometry/three_point_pose.h>
+// Copyright 2014 The Slick Authors. All rights reserved.
+#include "slick/scene/three_point_pose.h"
 #include <iostream>
 
-namespace look3d {
+namespace slick {
 
 #if defined( _WIN32)
 DefaultScalarType cbrt(DefaultScalarType x) {
@@ -107,7 +107,7 @@ int FindQuarticRealRoots( Scalar B, Scalar C, Scalar D, Scalar E, Scalar r[]) {
 }
 
 template<typename Scalar>
-look3d::SE3Group<Scalar> GetAbsoluteOrientationFrom3Points(
+slick::SE3Group<Scalar> GetAbsoluteOrientationFrom3Points(
     const Eigen::Matrix<Scalar, 3, 1> x[],
     const Eigen::Matrix<Scalar, 3, 1> y[]) {
   Eigen::Matrix<Scalar, 3, 3> D, D1;
@@ -121,10 +121,10 @@ look3d::SE3Group<Scalar> GetAbsoluteOrientationFrom3Points(
   D1.transpose().col(2) = D1.transpose().col(1).cross(D1.transpose().col(0));
 
   Eigen::Matrix<Scalar, 3, 3> m3 = (D.inverse()*D1).transpose();
-  look3d::SO3Group<Scalar> so3(m3);
+  slick::SO3Group<Scalar> so3(m3);
 
   Eigen::Matrix<Scalar, 3, 1> T = y[0] - so3 * x[0];
-  return look3d::SE3Group<Scalar>(so3, T);
+  return slick::SE3Group<Scalar>(so3, T);
 }
 
 // The function for pose estimation from three 2D - 3D point correspondences.
@@ -143,7 +143,7 @@ look3d::SE3Group<Scalar> GetAbsoluteOrientationFrom3Points(
 template<typename Scalar>
 int CalcThreePointPoses(const Eigen::Matrix<Scalar, 3, 1> xi[],
                         const Eigen::Matrix<Scalar, 2, 1> zi[],
-                        std::vector<look3d::SE3Group<Scalar> >& poses) {
+                        std::vector<slick::SE3Group<Scalar> >& poses) {
   Scalar ab_sq = (xi[1] - xi[0]).squaredNorm();
   Scalar ac_sq = (xi[2] - xi[0]).squaredNorm();
   Scalar bc_sq = (xi[2] - xi[1]).squaredNorm();
@@ -239,12 +239,12 @@ int CalcThreePointPoses(const Eigen::Matrix<Scalar, 3, 1> xi[],
 }
 
 template<typename Scalar>
-std::pair<bool, look3d::SE3Group<Scalar> > ComputeRobustAbsolutPoseRANSACMLE
+std::pair<bool, slick::SE3Group<Scalar> > ComputeRobustAbsolutPoseRANSACMLE
  (std::vector<std::pair<Eigen::Matrix<Scalar, 4, 1>,
                         Eigen::Matrix<Scalar, 2, 1> > >
   &observations) {
   typedef std::vector<std::pair<Eigen::Matrix<Scalar, 4, 1>, Eigen::Matrix<Scalar, 2, 1> > > Observations;
-  typedef std::vector<look3d::SE3Group<Scalar> > PotentialPoses;
+  typedef std::vector<slick::SE3Group<Scalar> > PotentialPoses;
   PotentialPoses potential_poses;
   Eigen::Matrix<Scalar, 3, 1> world_points[3];
   Eigen::Matrix<Scalar, 2, 1> observed_points[3];
@@ -253,9 +253,9 @@ std::pair<bool, look3d::SE3Group<Scalar> > ComputeRobustAbsolutPoseRANSACMLE
     std::random_shuffle(observations.begin(), observations.end());
     nrand = std::rand() % observations.size();
     if (nrand-3 > 0) {
-      world_points[0] = look3d::project(observations[nrand].first);
-      world_points[1] = look3d::project(observations[nrand-1].first);
-      world_points[2] = look3d::project(observations[nrand-2].first);
+      world_points[0] = slick::project(observations[nrand].first);
+      world_points[1] = slick::project(observations[nrand-1].first);
+      world_points[2] = slick::project(observations[nrand-2].first);
       observed_points[0] = observations[nrand].second;
       observed_points[1] = observations[nrand-1].second;
       observed_points[2] = observations[nrand-2].second;
@@ -273,21 +273,21 @@ std::pair<bool, look3d::SE3Group<Scalar> > ComputeRobustAbsolutPoseRANSACMLE
 #if 0
         std::vector<Eigen::Matrix<DefaultScalarType, 3, 3>> Rs;
         std::vector<Eigen::Matrix<DefaultScalarType, 3, 1>> Ts;
-        look3d::computeAbsolutePose3Point(
+        slick::computeAbsolutePose3Point(
               vObservedPoint2s[0], vObservedPoint2s[1], vObservedPoint2s[1],
               vWPoint3s[0], vWPoint3s[1], vWPoint3s[2], Rs, Ts);
 #else
-        std::vector<look3d::SE3Group<Scalar> > vPoses;
+        std::vector<slick::SE3Group<Scalar> > vPoses;
         CalcThreePointPoses(world_points, observed_points, vPoses);
 #endif
         bool bValid = false;
         for (size_t i = 0; i < vPoses.size(); ++i) {
-          look3d::SE3Group<Scalar> se3Pose = vPoses[i];
+          slick::SE3Group<Scalar> se3Pose = vPoses[i];
           bValid = false;
           Eigen::Matrix<Scalar, 3, 1> v3Cam =
-              se3Pose*look3d::project(observations[nrand].first);
+              se3Pose*slick::project(observations[nrand].first);
           Eigen::Matrix<Scalar, 2, 1> v2Error =
-              observations[nrand].second - look3d::project(v3Cam);
+              observations[nrand].second - slick::project(v3Cam);
           if (v3Cam[2]>0 && v2Error.squaredNorm() < 1.e-9) {
             potential_poses.push_back(se3Pose);
           } else {
@@ -305,14 +305,14 @@ std::pair<bool, look3d::SE3Group<Scalar> > ComputeRobustAbsolutPoseRANSACMLE
   // get the best pose
   Scalar min_errorsq = 1.e+9;
   Scalar sum_errorsq = 0.0;
-  look3d::SE3Group<Scalar> se3_best;
-  look3d::Tukey<Scalar> est;
+  slick::SE3Group<Scalar> se3_best;
+  slick::Tukey<Scalar> est;
   for (size_t i = 0; i < potential_poses.size(); i++) {
     std::vector<Scalar> vErrorSq;
     vErrorSq.reserve(observations.size());
     for (size_t j = 0; j < observations.size(); j++) {
       Eigen::Matrix<Scalar, 2, 1> v2Error = observations[j].second -
-          look3d::project(potential_poses[i]*look3d::project(observations[j].first));
+          slick::project(potential_poses[i]*slick::project(observations[j].first));
       vErrorSq.push_back(v2Error.squaredNorm());
     }
 
@@ -321,7 +321,7 @@ std::pair<bool, look3d::SE3Group<Scalar> > ComputeRobustAbsolutPoseRANSACMLE
     sum_errorsq = 0.0;
     for (size_t j = 0; j < observations.size(); j++) {
       Eigen::Matrix<Scalar, 2, 1> v2Error = observations[j].second -
-          look3d::project(potential_poses[i]*look3d::project(observations[j].first));
+          slick::project(potential_poses[i]*slick::project(observations[j].first));
       Scalar dErrorSq = v2Error.squaredNorm();
       const Scalar w = est.weight(dErrorSq);
       sum_errorsq += w*dErrorSq;
@@ -337,15 +337,15 @@ std::pair<bool, look3d::SE3Group<Scalar> > ComputeRobustAbsolutPoseRANSACMLE
 // instantiate =================================================================
 template int CalcThreePointPoses(const Eigen::Matrix<DefaultScalarType, 3, 1> xi[],
                                  const Eigen::Matrix<DefaultScalarType, 2, 1> zi[],
-                                 std::vector<look3d::SE3Group<DefaultScalarType> >& poses);
+                                 std::vector<slick::SE3Group<DefaultScalarType> >& poses);
 template int CalcThreePointPoses(const Eigen::Matrix<float, 3, 1> xi[],
                                  const Eigen::Matrix<float, 2, 1> zi[],
-                                 std::vector<look3d::SE3Group<float> >& poses);
+                                 std::vector<slick::SE3Group<float> >& poses);
 
-template std::pair<bool, look3d::SE3Group<DefaultScalarType> > ComputeRobustAbsolutPoseRANSACMLE(
+template std::pair<bool, slick::SE3Group<DefaultScalarType> > ComputeRobustAbsolutPoseRANSACMLE(
     std::vector<std::pair<Eigen::Matrix<DefaultScalarType, 4, 1>,
                         Eigen::Matrix<DefaultScalarType, 2, 1> > > &observations);
-template std::pair<bool, look3d::SE3Group<float> > ComputeRobustAbsolutPoseRANSACMLE(
+template std::pair<bool, slick::SE3Group<float> > ComputeRobustAbsolutPoseRANSACMLE(
     std::vector<std::pair<Eigen::Matrix<float, 4, 1>,
                         Eigen::Matrix<float, 2, 1> > > &observations);
-}  // namespace look3d
+}  // namespace slick

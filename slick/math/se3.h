@@ -1,9 +1,9 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_MATH_SE3_H_
-#define LOOK3D_MATH_SE3_H_
-#include "math/so3.h"
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
+#include "slick/math/so3.h"
+#include "slick/slick_api.h"
 
-namespace look3d {
+namespace slick {
 
 template <typename Precision> class SE3Group;
 
@@ -23,7 +23,7 @@ typedef SE3Group<float> SE3f;
 /// and length the amount of rotation (in radians), as for SO3Group
 /// @ingroup math
 template <typename Precision = DefaultScalarType>
-class SE3Group {
+class SLICK_API SE3Group {
   typedef Eigen::Matrix<Precision, 4, 4> MatrixType;
 
  public:
@@ -366,5 +366,4 @@ inline SE3Group<typename Eigen::internal::scalar_product_traits<Precision1, Prec
   Eigen::Matrix<typename Eigen::internal::scalar_product_traits<Precision1, Precision2>::ReturnType , 3, 1> v3 = lhs*rhs.get_translation();
   return SE3Group<typename Eigen::internal::scalar_product_traits<Precision1, Precision2>::ReturnType >( lhs*rhs.get_rotation(), v3);
 }
-}  // namespace look3d
-#endif  // LOOK3D_MATH_SE3_H_
+}  // namespace slick

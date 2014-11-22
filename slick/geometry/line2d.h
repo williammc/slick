@@ -1,16 +1,14 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_GEOMETRY_LINE2D_H_
-#define LOOK3D_GEOMETRY_LINE2D_H_
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
 #include <vector>
 #include <Eigen/Dense>
-#include <opencv2/core/core.hpp>
-#include "math/common.h"
-#include "geometry/look3d_geometry_api.h"
+#include "slick/datatypes.h"
+#include "slick/slick_api.h"
 
-namespace look3d {
+namespace slick {
 
 // representation of 2D line/line segment
-struct LOOK3D_GEOMETRY_API Line2d {
+struct SLICK_API Line2d {
   // Default Constructor.
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Line2d() {}
@@ -153,5 +151,4 @@ struct LOOK3D_GEOMETRY_API Line2d {
   Eigen::Vector2d line_vector;
   DefaultScalarType score;
 };
-}  // namespace look3d
-#endif  // LOOK3D_GEOMETRY_LINE2D_H_
+}  // namespace slick

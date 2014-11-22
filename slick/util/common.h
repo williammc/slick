@@ -1,6 +1,5 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_MATH_UTILITIES_H_
-#define LOOK3D_MATH_UTILITIES_H_
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
 
 #include <algorithm>
 #include <Eigen/Eigen>
@@ -13,7 +12,7 @@
 #endif
 
 // Various utility routines not fitting elsewhere.
-namespace look3d {
+namespace slick {
 // For a vector \e v of length \e i, return \f$[v_1, v_2, \cdots, v_{i-1}] / v_i \f$
 // @param v \e v
 // @ingroup gLinAlg
@@ -63,5 +62,4 @@ inline std::istream & operator >> (std::istream& in, Eigen::MatrixBase<Derived>&
   }
   return in;
 }
-}  // namespace look3d
-#endif  // LOOK3D_MATH_UTILITIES_H_
+}  // namespace slick

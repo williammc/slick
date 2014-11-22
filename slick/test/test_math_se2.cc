@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace Eigen;
-using namespace look3d;
+using namespace slick;
 
 void test_constructors(){
   cout << "SE2():\n" << SE2() << endl;

@@ -1,11 +1,10 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_MATH_SE2_H_
-#define LOOK3D_MATH_SE2_H_
-#include "math/common.h"
-#include "math/so2.h"
-#include "math/look3d_math_api.h"
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
+#include "slick/math/common.h"
+#include "slick/math/so2.h"
+#include "slick/slick_api.h"
 
-namespace look3d {
+namespace slick {
 
 template <typename Precision>
 class SE2Group;
@@ -271,5 +270,4 @@ inline SE2Group<typename Eigen::internal::scalar_product_traits<
   return SE2Group<typename Eigen::internal::scalar_product_traits<
       Precision1, Precision2>::ReturnType>(lhs * rhs.get_rotation(), v2);
 }
-}       // namespace look3d
-#endif  // LOOK3D_MATH_SE2_H_
+}       // namespace slick

@@ -4,7 +4,7 @@
 #include <Eigen/StdVector>
 #include <vector>
 
-namespace look3d {
+namespace slick {
 typedef double DefaultScalarType;  // make it easy to change for entire lib.
 
 #ifdef WIN32
@@ -23,17 +23,17 @@ typedef Eigen::Matrix<DefaultScalarType, 4, 4> Matrix4;
 typedef Eigen::Matrix<DefaultScalarType, 3, 4> Matrix3x4;
 typedef Eigen::Matrix<DefaultScalarType, 6, 6> Matrix6;
 
-}  // namespace look3d
+}  // namespace slick
 
 // Defines common vectors with Eigen elements
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(std::pair<int, look3d::Vector2>)
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(std::pair<look3d::Vector4, look3d::Vector2>)
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(std::pair<look3d::Vector3, look3d::Vector3>)
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(look3d::Matrix2)
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(look3d::Matrix3)
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(look3d::Matrix4)
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(look3d::Vector2)
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(look3d::Vector3)
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(look3d::Vector4)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(std::pair<int, slick::Vector2>)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(std::pair<slick::Vector4, slick::Vector2>)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(std::pair<slick::Vector3, slick::Vector3>)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::Matrix2)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::Matrix3)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::Matrix4)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::Vector2)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::Vector3)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::Vector4)
 //sEIGEN_DEFINE_STL_VECTOR_SPECIALIZATION()
 #endif  // LOOK3D_MATH_COMMON_H_

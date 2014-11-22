@@ -1,11 +1,11 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_MATH_DERIVATIVE_H_
-#define LOOK3D_MATH_DERIVATIVE_H_
-#include <math/so3.h>
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
+#include "slick/math/so3.h"
+#include "slick/slick_api.h"
 
-namespace look3d {
+namespace slick {
 
-template<typename Deri31>
+template<typename Deri31> SLICK_API
 Eigen::Matrix<typename Deri31::Scalar, 3, 3> dSO3(
     Eigen::MatrixBase<Deri31> const& v3) {
   Eigen::Matrix<typename Deri31::Scalar, 3, 3> derivative;
@@ -14,5 +14,4 @@ Eigen::Matrix<typename Deri31::Scalar, 3, 3> dSO3(
   derivative.col(2) = SO3Group<typename Deri31::Scalar>::generator_field(2, v3);
   return derivative;
 }
-}  // namespace look3d
-#endif  // LOOK3D_MATH_DERIVATIVE_H_
+}  // namespace slick

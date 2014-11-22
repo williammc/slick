@@ -1,31 +1,33 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(look3d_math)
+project(slick_library_and_examples)
 
 # Headers & sources ============================================================
-file(GLOB look3d_math_sources "*.cc")
-file(GLOB look3d_math_headers "*.h")
+set(sub_dirs geometry math scene util)
+set(REG_EXT "[^/]*([.]cpp|[.]c|[.]cc|[.]h|[.]hpp)$")
+foreach(sub_dir ${sub_dirs})
+  file(GLOB slick_${sub_dir}_sources "${CMAKE_CURRENT_SOURCE_DIR}/${sub_dir}/*.cc")
+  file(GLOB slick_${sub_dir}_headers "${CMAKE_CURRENT_SOURCE_DIR}/${sub_dir}/*.h")
+  list(APPEND slick_sources ${slick_${sub_dir}_sources}
+                            ${slick_${sub_dir}_headers})
+  source_group("${sub_dir}" REGULAR_EXPRESSION "${CMAKE_CURRENT_SOURCE_DIR}/${sub_dir}/${REG_EXT}")
+endforeach()
 
 # Library ======================================================================
-set(LIB_TARGET ${LOOK3D_LIB_PREFIX}math)
-set(LIB_DEPENDENCIES ${LOOK3D_LIB_PREFIX}core)
-add_library(${LIB_TARGET} ${LOOK3D_LIB_TYPE} ${look3d_math_sources}
-                                             ${look3d_math_headers})
-target_link_libraries(${LIB_TARGET} ${LIB_DEPENDENCIES} ${LOOK3D_EXTERNAL_LIBS})
-set_property(TARGET ${LIB_TARGET} PROPERTY FOLDER "look3d_libs")
+set(LIB_TARGET slick)
+add_library(${LIB_TARGET} ${Slick_LIB_TYPE} ${slick_sources})
+set_property(TARGET ${LIB_TARGET} PROPERTY FOLDER "slick_libs")
 
-list(APPEND LOOK3D_LIBRARIESS ${LIB_TARGET})
+list(APPEND Slick_LIBS ${LIB_TARGET})
 
 # Tests ========================================================================
-if(LOOK3D_WITH_TEST)
+if(Slick_WITH_TEST)
   enable_testing()  # has to be in root CMakeLists.txt for target 'test' to work!
   add_subdirectory(test)
-endif(LOOK3D_WITH_TEST)
+endif(Slick_WITH_TEST)
 
-# Installation =================================================================
-install(TARGETS ${LIB_TARGET}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-)
-install(FILES ${look3d_math_headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/look3d/math)
+## Examples ====================================================================
+if(Slick_WITH_EXAMPLES)  # example applications
+  add_subdirectory(examples)
+endif(Slick_WITH_EXAMPLES)
+

@@ -1,7 +1,7 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#include <math/poli_camera.h>
+// Copyright 22014 The Slick Authors. All rights reserved.
+#include "slick/scene/poli_camera.h"
 
-namespace look3d {
+namespace slick {
 
 template<typename Precision>
 PoliCamera<Precision>::PoliCamera(PoliCamera const &cam_in) {
@@ -107,5 +107,5 @@ template void PoliCamera<DefaultScalarType>::set_parameters(
 template void PoliCamera<float>::set_parameters(
     const Eigen::Matrix<float, PoliCamera<float>::param_n_, 1>& vCPs);
 
-}  // end namespace look3d
+}  // end namespace slick
 

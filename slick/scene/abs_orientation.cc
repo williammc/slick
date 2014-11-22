@@ -1,9 +1,10 @@
-// Copyright 2012, 2013, 2014 The LooK3D Authors. All rights reserved.
-#include <geometry/abs_orientation.h>
+// Copyright 2014 The Slick Authors. All rights reserved.
+#include "slick/scene/abs_orientation.h"
+#include <scene/abs_orientation.h>
 #include <Eigen/Eigenvalues>
 
 using std::vector;
-namespace look3d {
+namespace slick {
 Eigen::Matrix<DefaultScalarType, 3, 3> QuaternionToMatrix(const Eigen::Matrix<DefaultScalarType, 4, 1> & q) {
   Eigen::Matrix<DefaultScalarType, 3, 3> result;
   const int w = 0, x = 1, y = 2, z = 3;
@@ -134,4 +135,4 @@ SO3 ComputeMeanOrientation(const std::vector<SO3 > & r) {
   return mean * base;
 }
 
-}  // namespace look3d
+}  // namespace slick

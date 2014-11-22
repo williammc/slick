@@ -1,12 +1,11 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_MATH_WLS_H_
-#define LOOK3D_MATH_WLS_H_
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
 #include <cmath>
 #include <Eigen/Dense>
-#include "math/common.h"
-#include "math/look3d_math_api.h"
+#include "slick/datatypes.h"
+#include "slick/slick_api.h"
 
-namespace look3d {
+namespace slick {
 
 // Performs Gauss-Newton weighted least squares computation.
 // @param Size The number of dimensions in the system
@@ -17,7 +16,7 @@ namespace look3d {
 // @ingroup gEquations
 template <class Scalar = DefaultScalarType, int Size = Eigen::Dynamic,
     class Decomposition = Eigen::LDLT<Eigen::Matrix<Scalar, Size, Size> > >
-class LOOK3D_MATH_API WLS {
+class SLICK_API WLS {
 public:
   // Default constructor or construct with the number of dimensions for the Dynamic case
   explicit WLS(int size = Size) {
@@ -211,5 +210,4 @@ public:
   Decomposition decomposition;
   Eigen::Matrix<Scalar, Size, 1> solution;
 };  // end class WLS
-}  // namespace look3d
-#endif  // LOOK3D_MATH_WLS_H_
+}  // namespace slick

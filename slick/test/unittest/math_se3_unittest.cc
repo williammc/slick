@@ -8,7 +8,7 @@
 
 using namespace std;
 using namespace Eigen;
-using namespace look3d;
+using namespace slick;
 
 // constructors tests ==========================================================
 template <typename T>

@@ -1,16 +1,15 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_MATH_MESTIMATOR_H_
-#define LOOK3D_MATH_MESTIMATOR_H_
+// Copyright 2014 The Slick Authors. All rights reserved.
+#pragma once
 #include <vector>
 #include <cassert>
 #include <algorithm>
 
-#include "math/look3d_math_api.h"
+#include "slick/slick_api.h"
 
-namespace look3d {
+namespace slick {
 
 template <typename Precision>
-struct LOOK3D_MATH_API MEstimator {
+struct SLICK_API MEstimator {
   MEstimator() {}
   virtual ~MEstimator() {}
   typedef Precision value_type;
@@ -21,7 +20,7 @@ struct LOOK3D_MATH_API MEstimator {
 };
 
 template <typename Precision>
-struct LOOK3D_MATH_API LeastSquares : public MEstimator<Precision> {
+struct SLICK_API LeastSquares : public MEstimator<Precision> {
   LeastSquares();
   Precision sigmaSquared;
 
@@ -32,7 +31,7 @@ struct LOOK3D_MATH_API LeastSquares : public MEstimator<Precision> {
 };
 
 template <typename Precision>
-struct LOOK3D_MATH_API Tukey : public MEstimator<Precision> {
+struct SLICK_API Tukey : public MEstimator<Precision> {
   Precision sigmaSquared;
   mutable int outliers;
 
@@ -45,7 +44,7 @@ struct LOOK3D_MATH_API Tukey : public MEstimator<Precision> {
 };
 
 template <typename Precision>
-struct LOOK3D_MATH_API Huber : public MEstimator<Precision> {
+struct SLICK_API Huber : public MEstimator<Precision> {
   Precision sigmaSquared;
   mutable int outliers;
 
@@ -59,19 +58,18 @@ struct LOOK3D_MATH_API Huber : public MEstimator<Precision> {
 
 // Instantiate template functions ==============================================
 //#define INSTANTIATE_MESTIMATORS(T)                                             \
-//template struct LOOK3D_MATH_API MEstimator<T>;\
-//template struct LOOK3D_MATH_API LeastSquares<T>;\
-//template struct LOOK3D_MATH_API Tukey<T>;\
-//template struct LOOK3D_MATH_API Huber<T>;
-////template LOOK3D_MATH_API T LeastSquares<T>::compute_sigma_squared(std::vector<T>);\
-////template LOOK3D_MATH_API Tukey<T>::Tukey();\
-////template LOOK3D_MATH_API T Tukey<T>::compute_sigma_squared(std::vector<T>);\
-////template LOOK3D_MATH_API T Tukey<T>::weight(T) const;\
-////template LOOK3D_MATH_API Huber<T>::Huber();\
-////template LOOK3D_MATH_API T Huber<T>::compute_sigma_squared(std::vector<T>);\
-////template LOOK3D_MATH_API T Huber<T>::weight(T) const;
+//template struct SLICK_API MEstimator<T>;\
+//template struct SLICK_API LeastSquares<T>;\
+//template struct SLICK_API Tukey<T>;\
+//template struct SLICK_API Huber<T>;
+////template SLICK_API T LeastSquares<T>::compute_sigma_squared(std::vector<T>);\
+////template SLICK_API Tukey<T>::Tukey();\
+////template SLICK_API T Tukey<T>::compute_sigma_squared(std::vector<T>);\
+////template SLICK_API T Tukey<T>::weight(T) const;\
+////template SLICK_API Huber<T>::Huber();\
+////template SLICK_API T Huber<T>::compute_sigma_squared(std::vector<T>);\
+////template SLICK_API T Huber<T>::weight(T) const;
 //
 //INSTANTIATE_MESTIMATORS(float)
 //INSTANTIATE_MESTIMATORS(double)
-}  // namespace look3d
-#endif  // LOOK3D_MATH_MESTIMATOR_H_
+}  // namespace slick

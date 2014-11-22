@@ -1,16 +1,14 @@
-// Copyright 2012, 2013, 2014 The Look3D Authors. All rights reserved.
-#ifndef LOOK3D_GEOMETRY_THREE_POINT_POSE_H_
-#define LOOK3D_GEOMETRY_THREE_POINT_POSE_H_
+// Copyright 2014 The Slick Authors. All rights reserved.
 #include <utility>
 #include <vector>
 #include <Eigen/Eigen>
 
-#include "math/se3.h"
-#include "math/mestimator.h"
-#include "math/utilities.h"
-#include "geometry/look3d_geometry_api.h"
+#include "slick/math/se3.h"
+#include "slick/util/mestimator.h"
+#include "slick/util/common.h"
+#include "slick/slick_api.h"
 
-namespace look3d {
+namespace slick {
 
 // A function to evaluate x^4 + Bx^3 + Cx^2 + Dx + E
 inline DefaultScalarType eval_quartic(DefaultScalarType B, DefaultScalarType C, DefaultScalarType D, DefaultScalarType E, DefaultScalarType x) {
@@ -36,15 +34,15 @@ template<typename Scalar>
 inline static Scalar square(Scalar x) { return x*x; }
 
 template<typename Scalar>
-static look3d::SE3Group<Scalar> GetAbsoluteOrientationFrom3Points(
+static slick::SE3Group<Scalar> GetAbsoluteOrientationFrom3Points(
     const Eigen::Matrix<Scalar, 3, 1> x[],
     const Eigen::Matrix<Scalar, 3, 1> y[]);
 
-template LOOK3D_GEOMETRY_API SE3Group<float> GetAbsoluteOrientationFrom3Points(
+template SLICK_API SE3Group<float> GetAbsoluteOrientationFrom3Points(
 const Eigen::Matrix<float, 3, 1> x[],
 const Eigen::Matrix<float, 3, 1> y[]);
 
-template LOOK3D_GEOMETRY_API SE3Group<double> GetAbsoluteOrientationFrom3Points(
+template SLICK_API SE3Group<double> GetAbsoluteOrientationFrom3Points(
 const Eigen::Matrix<double, 3, 1> x[],
 const Eigen::Matrix<double, 3, 1> y[]);
 
@@ -64,30 +62,29 @@ const Eigen::Matrix<double, 3, 1> y[]);
 template<typename Scalar>
 int CalcThreePointPoses(const Eigen::Matrix<Scalar, 3, 1> xi[],
                         const Eigen::Matrix<Scalar, 2, 1> zi[],
-                        std::vector<look3d::SE3Group<Scalar> >& poses);
-template LOOK3D_GEOMETRY_API
+                        std::vector<slick::SE3Group<Scalar> >& poses);
+template SLICK_API
 int CalcThreePointPoses(const Eigen::Matrix<float, 3, 1> xi[],
                         const Eigen::Matrix<float, 2, 1> zi[],
-                        std::vector<look3d::SE3Group<float> >& poses);
-template LOOK3D_GEOMETRY_API
+                        std::vector<slick::SE3Group<float> >& poses);
+template SLICK_API
 int CalcThreePointPoses(const Eigen::Matrix<double, 3, 1> xi[],
                         const Eigen::Matrix<double, 2, 1> zi[],
-                        std::vector<look3d::SE3Group<double> >& poses);
+                        std::vector<slick::SE3Group<double> >& poses);
 
 
 template <typename Scalar>
-std::pair<bool, look3d::SE3Group<Scalar> > ComputeRobustAbsolutPoseRANSACMLE(
+std::pair<bool, slick::SE3Group<Scalar> > ComputeRobustAbsolutPoseRANSACMLE(
     std::vector<std::pair<Eigen::Matrix<Scalar, 4, 1>,
                         Eigen::Matrix<Scalar, 2, 1> > > &observations);
 
-template LOOK3D_GEOMETRY_API
-std::pair<bool, look3d::SE3Group<float> > ComputeRobustAbsolutPoseRANSACMLE(
+template SLICK_API
+std::pair<bool, slick::SE3Group<float> > ComputeRobustAbsolutPoseRANSACMLE(
     std::vector<std::pair<Eigen::Matrix<float, 4, 1>,
                         Eigen::Matrix<float, 2, 1> > > &observations);
 
-template LOOK3D_GEOMETRY_API
-std::pair<bool, look3d::SE3Group<double> > ComputeRobustAbsolutPoseRANSACMLE(
+template SLICK_API
+std::pair<bool, slick::SE3Group<double> > ComputeRobustAbsolutPoseRANSACMLE(
     std::vector<std::pair<Eigen::Matrix<double, 4, 1>,
                         Eigen::Matrix<double, 2, 1> > > &observations);
-}  // namespace look3d
-#endif  // LOOK3D_GEOMETRY_THREE_POINT_POSE_H_
+}  // namespace slick
