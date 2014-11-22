@@ -12,9 +12,9 @@ if(NOT CMAKER_ROOT)
 endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKER_ROOT}/modules ${CMAKER_ROOT}/utils)
 
-set(Slick_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(Slick_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 if(NOT THE_PROJECT_ROOT OR THE_PROJECT_ROOT STREQUAL "")
-  set(THE_PROJECT_ROOT ${Slick_ROOT_DIR})
+  set(THE_PROJECT_ROOT ${Slick_ROOT})
 endif()
 
 include(CMakerCommonUtil)  # include useful macros
@@ -28,7 +28,7 @@ cmaker_print_status("Slick cmake module paths: ${Slick_COLOR_BLUE}${CMAKE_MODULE
 cmaker_detect_os()
 
 set(Slick_CXX_FLAGS)
-add_definitions(-DSlick_ROOT_DIR="${Slick_ROOT_DIR}")
+add_definitions(-DSlick_ROOT="${Slick_ROOT}")
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
   set(Slick_CXX_FLAGS " -stdlib=libstdc++ ")  # prevent default libc++ on new mac

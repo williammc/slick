@@ -8,7 +8,7 @@ using namespace std;
 
 int test_computeHandEye() {
   stringstream ss;
-  ss << Slick_ROOT_DIR << "/data/" << "handeye-1.txt";
+  ss << Slick_ROOT << "/data/" << "handeye-1.txt";
   fstream fs(ss.str().c_str(), std::ios_base::in);
   vector<SO3 > sensorworld2sensor_rots, cam2vision_rots;
   Eigen::Matrix<SlickScalar, 3, 1> temp_v;
