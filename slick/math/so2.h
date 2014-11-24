@@ -159,3 +159,5 @@ inline typename Eigen::ProductReturnType<
   return lhs * rhs.get_matrix();
 }
 }       // namespace slick
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::SO2f)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::SO2d)

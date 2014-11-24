@@ -21,10 +21,10 @@ set_property(TARGET ${LIB_TARGET} PROPERTY FOLDER "slick_libs")
 list(APPEND Slick_LIBS ${LIB_TARGET})
 
 # Tests ========================================================================
-if(Slick_WITH_TEST)
+if(Slick_WITH_TEST AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test)
   enable_testing()  # has to be in root CMakeLists.txt for target 'test' to work!
   add_subdirectory(test)
-endif(Slick_WITH_TEST)
+endif(Slick_WITH_TEST AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 ## Examples ====================================================================
 if(Slick_WITH_EXAMPLES)  # example applications

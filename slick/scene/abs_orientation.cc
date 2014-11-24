@@ -1,6 +1,6 @@
 // Copyright 2014 The Slick Authors. All rights reserved.
 #include "slick/scene/abs_orientation.h"
-#include <scene/abs_orientation.h>
+#include "slick/scene/abs_orientation.h"
 #include <Eigen/Eigenvalues>
 
 using std::vector;

@@ -271,3 +271,5 @@ inline SE2Group<typename Eigen::internal::scalar_product_traits<
       Precision1, Precision2>::ReturnType>(lhs * rhs.get_rotation(), v2);
 }
 }       // namespace slick
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::SE2f)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::SE2d)

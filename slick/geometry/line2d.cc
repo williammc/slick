@@ -1,5 +1,5 @@
 // Copyright 2012, 2013, 2014 The LooK3D Authors. All rights reserved.
-#include "geometry/line2d.h"
+#include "slick/geometry/line2d.h"
 
 #include <algorithm>
 #include <Eigen/Core>

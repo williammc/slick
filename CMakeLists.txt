@@ -5,12 +5,14 @@ project(${THE_PROJECT_NAME})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)  # for organizing code to folders
 
 # Look for our CMake modules paths
-get_filename_component(CMAKER_ROOT $ENV{CMAKER_ROOT} ABSOLUTE)
-message(STATUS "CMAKER_ROOT:${CMAKER_ROOT}")
-if(NOT CMAKER_ROOT)
-  message(ERROR "Environment variable CMAKER_ROOT not set!")
+if(NOT CMAKER_ROOT OR CMAKER_ROOT STREQUAL "")
+  get_filename_component(CMAKER_ROOT $ENV{CMAKER_ROOT} ABSOLUTE)
+  message(STATUS "CMAKER_ROOT:${CMAKER_ROOT}")
+  if(NOT CMAKER_ROOT)
+    message(ERROR "Environment variable CMAKER_ROOT not set!")
+  endif()
+  list(APPEND CMAKE_MODULE_PATH ${CMAKER_ROOT}/cmake/modules ${CMAKER_ROOT}/cmake)
 endif()
-list(APPEND CMAKE_MODULE_PATH ${CMAKER_ROOT}/modules ${CMAKER_ROOT}/utils)
 
 set(Slick_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 if(NOT THE_PROJECT_ROOT OR THE_PROJECT_ROOT STREQUAL "")
@@ -35,7 +37,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 endif()
 
 ## Build Options ===============================================================
-option(Slick_WITH_TEST "Build Slick library with tests" ON)
+option(Slick_WITH_TEST "Build Slick library with tests" OFF)
 option(Slick_WITH_EXAMPLES "Build the library with UI" OFF)
 
 set(CMAKE_CXX_FLAGS ${Slick_CXX_FLAGS})
@@ -52,18 +54,19 @@ endif()
 ## External libraries (included in this repo) ==================================
 # Eigen
 set(EIGEN_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/slick_external)
-add_subdirectory(external/eigen-3.2.1)
-include_directories(external/eigen-3.2.1 external/eigen-3.2.1/unsupported)
+#add_subdirectory(external/eigen-3.2.2)
+include_directories(external/eigen-3.2.2 external/eigen-3.2.2/unsupported)
 
 # GTest
-if(Slick_WITH_TEST)
+if(Slick_WITH_TEST AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/external/gtest-1.7.0)
   add_subdirectory(external/gtest-1.7.0)
   include_directories(external/gtest-1.7.0/include)
+  set_property(TARGET gtest PROPERTY FOLDER "external/gtest")
+  set_property(TARGET gtest_main PROPERTY FOLDER "external/gtest")
 endif()
 
 ## Slick library ===============================================================
-set(Slick_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/slick
-                       ${CMAKE_CURRENT_SOURCE_DIR})
+set(Slick_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${Slick_INCLUDE_DIRS})
 
 add_subdirectory(slick)  # where internal libraries are

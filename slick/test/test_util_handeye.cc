@@ -10,22 +10,22 @@ int test_computeHandEye() {
   stringstream ss;
   ss << Slick_ROOT << "/data/" << "handeye-1.txt";
   fstream fs(ss.str().c_str(), std::ios_base::in);
-  vector<SO3 > sensorworld2sensor_rots, cam2vision_rots;
+  //vector<SO3> sensorworld2sensor_rots, cam2vision_rots;
   Eigen::Matrix<SlickScalar, 3, 1> temp_v;
   for (int i=0; i<6; ++i) {
     fs >> temp_v[0] >> temp_v[1] >> temp_v[2];
-    SO3 sw2s_rot(temp_v);
+    //SO3 sw2s_rot(temp_v);
 
     fs >> temp_v[0] >> temp_v[1] >> temp_v[2];
-    SO3 c2v_rot(temp_v);
-    sensorworld2sensor_rots.push_back(sw2s_rot);
-    cam2vision_rots.push_back(c2v_rot);
+    //SO3 c2v_rot(temp_v);
+    //sensorworld2sensor_rots.push_back(sw2s_rot);
+    //cam2vision_rots.push_back(c2v_rot);
   }
 
-  std::pair<SO3 , SO3 > res  = ComputeHandEye( sensorworld2sensor_rots, cam2vision_rots );
+  //std::pair<SO3 , SO3 > res  = ComputeHandEye( sensorworld2sensor_rots, cam2vision_rots );
 
-  cout << "sensor2cam:\n" << res.first << endl;
-  cout << "vision2sensorworld:\n" << res.second << endl;
+  //cout << "sensor2cam:\n" << res.first << endl;
+  //cout << "vision2sensorworld:\n" << res.second << endl;
 
   return 1;
 }

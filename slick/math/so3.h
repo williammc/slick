@@ -1,9 +1,6 @@
 // Copyright 2014 The Slick Authors. All rights reserved.
 #pragma once
 #include <cassert>
-#ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES
-#endif
 #include <math.h>
 
 #include <Eigen/Core>
@@ -335,3 +332,5 @@ inline typename Eigen::ProductReturnType< OtherDerived, Eigen::Matrix<Precision,
   return lhs * rhs.get_matrix();
 }
 }  // end namespace slick
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::SO3f)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::SO3d)
