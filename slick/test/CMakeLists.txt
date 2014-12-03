@@ -5,7 +5,7 @@ project(slick_test)
 cmaker_common_build_setting()
 
 ##==============================================================================
-set(ALL_LIBRARIES ${Slick_LIBS} ${LOOK3D_EXTERNAL_LIBS})
+set(ALL_LIBRARIES ${Slick_LIBS} ${Slick_EXTERNAL_LIBS})
 ##==============================================================================
 ##  executables
 file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cc)
