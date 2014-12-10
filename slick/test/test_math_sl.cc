@@ -2,7 +2,7 @@
 #include <iostream>
 #include <iomanip>
 
-#include <math/sl.h>
+#include "slick/math/sl.h"
 
 using namespace std;
 using namespace Eigen;

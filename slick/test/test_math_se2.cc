@@ -2,8 +2,8 @@
 
 #include <Eigen/Eigen>
 
-#include <math/so2.h>
-#include <math/se2.h>
+#include "slick/math/so2.h"
+#include "slick/math/se2.h"
 
 using namespace std;
 using namespace Eigen;

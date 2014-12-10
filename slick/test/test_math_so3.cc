@@ -3,7 +3,7 @@
 
 #include <Eigen/Eigen>
 
-#include <math/so3.h>
+#include "slick/math/so3.h"
 
 using namespace std;
 using namespace Eigen;

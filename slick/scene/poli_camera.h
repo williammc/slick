@@ -26,7 +26,7 @@ class SLICK_API PoliCamera {
   typedef Precision ScalarType;
   /// Camera params number (fx,fy,cx,cy,k1,k2)
   static const int param_n_ = 6;
-  // Constructors  =============================================================
+  // Constructors --------------------------------------------------------------
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   /// explicit default constructor
   PoliCamera() {
@@ -39,13 +39,15 @@ class SLICK_API PoliCamera {
   /// constructor with width, height, & camera params
   PoliCamera(int width, int height, const Precision* params = NULL);
 
-  /// Key Methods  ==============================================================
+  PoliCamera(const Eigen::VectorXf& params);
+
+  /// Key Methods --------------------------------------------------------------
   /// Do projection.
   /// @param v3Cam[in] 3D position in camera coordinate frame
   /// @return 2D point on image plane (on screen)
   template<typename OtherDerived>
   Eigen::Matrix<Precision, 2, 1> Project(
-      const Eigen::MatrixBase<OtherDerived>& v2_camplane) const;
+      const Eigen::MatrixBase<OtherDerived>& v2_cam) const;
 
   /// Do unprojection
   /// @param v2_implane[in] 2D point on image plane (on screen)
@@ -56,11 +58,11 @@ class SLICK_API PoliCamera {
 
   /// Project linearly (only apply PinHole part, no distortion)
   /// 3D point into image plane
-  /// @param  v2_camplane[in] 3D point
+  /// @param  v2_cam[in] 3D point
   /// @return projected 2D point without distortion
   template<typename OtherDerived>
   Eigen::Matrix<Precision, 2, 1> ProjectLinear(
-      const Eigen::MatrixBase<OtherDerived>& v2_camplane) const;
+      const Eigen::MatrixBase<OtherDerived>& v2_cam) const;
 
   /// Unproject an undistorting 2D into 3D point in image plane with z=1
   /// @param vIn2DPoint undistorting 2D point
@@ -70,7 +72,7 @@ class SLICK_API PoliCamera {
       const Eigen::MatrixBase<OtherDerived>& vIn2DPoint) const;
 
   Eigen::Matrix<Precision, 2, 2> GetProjectionDerivatives(
-      const Eigen::Matrix<Precision, 2, 1>& v2_camplane) const;
+      const Eigen::Matrix<Precision, 2, 1>& v2_cam) const;
 
   Precision unit_pixel_distance() {
     return unit_pixel_distance_;
@@ -94,6 +96,10 @@ class SLICK_API PoliCamera {
     UpdateInternalParams();
   }
 
+  Eigen::Matrix<Precision, 2, 1> resolution() {
+    return Eigen::Matrix<Precision, 2, 1>(width_, height_);
+  }
+
   int width() const {
     return width_;
   }
@@ -102,28 +108,46 @@ class SLICK_API PoliCamera {
     return height_;
   }
 
-  // For Calibration purposes  =================================================
+  /// reset image resolution for this camera model
+  void SetImageSize(const Eigen::Matrix<Precision, 2, 1>& size) {
+    width_ = size[0];
+    height_ = size[1];
+    int old_w = width_, old_h = height_;
+    width_ = size[0];
+    height_ = size[1];
+    fx_ *= static_cast<SlickScalar>(size[0]) / old_w;
+    fy_ *= static_cast<SlickScalar>(size[1]) / old_h;
+    cx_ *= static_cast<SlickScalar>(size[0]) / old_w;
+    cy_ *= static_cast<SlickScalar>(size[1]) / old_h;
+    UpdateInternalParams();
+  }
+
+  Eigen::Matrix<Precision, 2, 1> ImageSize() const {
+    return Eigen::Matrix<Precision, 2, 1>(width_, height_);
+  }
+
+  // For Calibration purposes --------------------------------------------------
   Eigen::Matrix<Precision, 2, PoliCamera<Precision>::param_n_> GetParameterDerivs(
-      const Eigen::Matrix<Precision, 2, 1>& v2_camplane) const {
+      const Eigen::Matrix<Precision, 2, 1>& v2_cam) const {
     Eigen::Matrix<Precision, 2, PoliCamera<Precision>::param_n_> result;
-    Precision r2 = v2_camplane.squaredNorm();
+    Precision r2 = v2_cam.squaredNorm();
     Precision r4 = r2 * r2;
     Eigen::Matrix<Precision, 2, 1> mod_camframe =
-        v2_camplane * (1+ r2 * (cam_params_[4] + r2 * cam_params_[5]));
+        v2_cam * (1+ r2 * (cam_params_[4] + r2 * cam_params_[5]));
 
     result(0, 0) = mod_camframe[0];
     result(0, 1) = 0;
     result(0, 2) = 1;
     result(0, 3) = 0;
-    result(0, 4) = cam_params_[0]*v2_camplane[0]*r2;
-    result(0, 5) = cam_params_[0]*v2_camplane[0]*r4;
+    result(0, 4) = cam_params_[0]*v2_cam[0]*r2;
+    result(0, 5) = cam_params_[0]*v2_cam[0]*r4;
 
     result(1, 0) = 0;
     result(1, 1) = mod_camframe[1];
     result(1, 2) = 0;
     result(1, 3) = 1;
-    result(1, 4) = cam_params_[1]*v2_camplane[1]*r2;
-    result(1, 5) = cam_params_[1]*v2_camplane[1]*r4;
+    result(1, 4) = cam_params_[1]*v2_cam[1]*r2;
+    result(1, 5) = cam_params_[1]*v2_cam[1]*r4;
     return result;
   }
 
@@ -131,7 +155,11 @@ class SLICK_API PoliCamera {
     return cam_params_;
   }
   void set_parameters(
-      const Eigen::Matrix<Precision, PoliCamera<Precision>::param_n_, 1>& vCPs);
+    const Eigen::Matrix<Precision, PoliCamera<Precision>::param_n_, 1>& vCPs);
+  void SetParameters(
+    const Eigen::Matrix<Precision, PoliCamera<Precision>::param_n_, 1>& vCPs) {
+    set_parameters(vCPs);
+  }
 
  protected:
   /// common method for initializing internal params
@@ -150,71 +178,71 @@ class SLICK_API PoliCamera {
   Precision k1_, k2_;  /// Distortion Coefficients
 };
 
-// Implementation ============================ =================================
+// Implementation ==============================================================
 /// const int iParamN = PoliCamera<>::iParamN;
 /// explicit declared to advoide compiler's specific configuration
 
 template<typename Precision>
 template<typename OtherDerived>
 inline Eigen::Matrix<Precision, 2, 1> PoliCamera<Precision>::Project(
-    const Eigen::MatrixBase<OtherDerived>& v2_camplane) const {
-  Eigen::Matrix<Precision, 2, 1> v2Point;
+    const Eigen::MatrixBase<OtherDerived>& v2_cam) const {
+  Eigen::Matrix<Precision, 2, 1> loc;
   Precision dR2, dR4, dFactor;
-  v2Point[0] = v2_camplane[0];
-  v2Point[1] = v2_camplane[1];
-  dR2 = v2Point[0]*v2Point[0] + v2Point[1]*v2Point[1];
+  loc[0] = v2_cam[0];
+  loc[1] = v2_cam[1];
+  dR2 = loc[0]*loc[0] + loc[1]*loc[1];
   dR4 = dR2*dR2;
   dFactor = 1 + k1_*dR2 + k2_*dR4;
-  v2Point[0] = fx_*v2Point[0]*dFactor + cx_;
-  v2Point[1] = fy_*v2Point[1]*dFactor + cy_;
-  return v2Point;
+  loc[0] = fx_*loc[0]*dFactor + cx_;
+  loc[1] = fy_*loc[1]*dFactor + cy_;
+  return loc;
 }
 
 template<typename Precision>
 template<typename OtherDerived>
 inline Eigen::Matrix<Precision, 2, 1> PoliCamera<Precision>::UnProject(
     const Eigen::MatrixBase<OtherDerived>& v2_implane) const {
-  Eigen::Matrix<Precision, 2, 1> v2Point;
-  v2Point = v2_implane;
-  v2Point[0] = v2_implane(0, 0);
-  v2Point[1] = v2_implane(1, 0);
-  v2Point[0] = (v2Point[0]-cx_)/fx_;
-  v2Point[1] = (v2Point[1]-cy_)/fy_;
+  Eigen::Matrix<Precision, 2, 1> v2_cam;
+  v2_cam = v2_implane;
+  v2_cam[0] = v2_implane(0, 0);
+  v2_cam[1] = v2_implane(1, 0);
+  v2_cam[0] = (v2_cam[0] - cx_) / fx_;
+  v2_cam[1] = (v2_cam[1] - cy_) / fy_;
   /// employ libcvd's implementation
   /// first guess
-  SlickScalar scale = v2Point.squaredNorm();
+  SlickScalar scale = v2_cam.squaredNorm();
 
   /// iterations of Newton-Rapheson
   for (int i = 0; i < 3 ; ++i) {  /// 3 iteration is good enough in certain range
-    SlickScalar temp = 1 + scale*(k1_+k2_*scale);
-    SlickScalar error = v2Point.squaredNorm() - scale*temp*temp;
+    SlickScalar temp = 1 + scale*(k1_ + k2_*scale);
+    SlickScalar error = v2_cam.squaredNorm() - scale*temp*temp;
     SlickScalar deriv = temp*(temp+2*scale*(k1_ + 2*k2_*scale));
     scale += error/deriv;
   }
-  v2Point = v2Point/static_cast<Precision>((1 + scale*(k1_ + k2_*scale)));
-  return v2Point;
+  v2_cam = v2_cam/static_cast<Precision>((1 + scale*(k1_ + k2_*scale)));
+  return v2_cam;
 }
 
 template<typename Precision>
 template<typename OtherDerived>
 inline Eigen::Matrix<Precision, 2, 1> PoliCamera<Precision>::ProjectLinear(
-    const Eigen::MatrixBase<OtherDerived>& v2_camplane) const {
-  Eigen::Matrix<Precision, 2, 1> v2Point;
-  v2Point[0] = fx_*(v2_camplane[0]) + cx_;
-  v2Point[1] = fy_*(v2_camplane[1]) + cy_;
-  return v2Point;
+    const Eigen::MatrixBase<OtherDerived>& v2_cam) const {
+  Eigen::Matrix<Precision, 2, 1> loc;
+  loc[0] = fx_*v2_cam[0] + cx_;
+  loc[1] = fy_*v2_cam[1] + cy_;
+  return loc;
 }
 
 template<typename Precision>
 template<typename OtherDerived>
 inline Eigen::Matrix<Precision, 2, 1> PoliCamera<Precision>::UnProjectLinear(
     const Eigen::MatrixBase<OtherDerived>& v2_implane) const {
-  Eigen::Matrix<Precision, 2, 1> v2Point;
+  Eigen::Matrix<Precision, 2, 1> v2_cam;
   /// Transfer from Pixel coordinate to (u,v) coordinate
-  v2Point[0] = v2_implane[0];
-  v2Point[1] = v2_implane[1];
-  v2Point[0] = (v2Point[0]-cx_)/fx_;
-  v2Point[1] = (v2Point[1]-cy_)/fy_;
-  return v2Point;
+  v2_cam[0] = v2_implane[0];
+  v2_cam[1] = v2_implane[1];
+  v2_cam[0] = (v2_cam[0] - cx_) / fx_;
+  v2_cam[1] = (v2_cam[1] - cy_) / fy_;
+  return v2_cam;
 }
 }  // end namespace slick

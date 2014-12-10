@@ -3,8 +3,8 @@
 
 #include <Eigen/Eigen>
 
-#include <math/so3.h>
-#include <math/se3.h>
+#include "slick/math/so3.h"
+#include "slick/math/se3.h"
 
 using namespace std;
 using namespace Eigen;

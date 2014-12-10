@@ -1,4 +1,4 @@
-// Copyright 22014 The Slick Authors. All rights reserved.
+// Copyright 2014 The Slick Authors. All rights reserved.
 #include "slick/scene/poli_camera.h"
 
 namespace slick {
@@ -18,6 +18,15 @@ template<typename Precision>
 PoliCamera<Precision>::PoliCamera(
     int width, int height, const Precision* params) {
   init(width, height, params);
+}
+
+template<typename Precision>
+PoliCamera<Precision>::PoliCamera(const Eigen::VectorXf& params) {
+  width_ = params[0];
+  height_ = params[1];
+  cam_params_ = params.segment(2, 6).cast<Precision>();
+  // update camera params to internal params
+  UpdateInternalParams();
 }
 
 template<typename Precision>
@@ -80,30 +89,33 @@ void PoliCamera<Precision>::set_parameters(
 
 
 // instantiate =================================================================
-template PoliCamera<SlickScalar>::PoliCamera(PoliCamera const &cam);
-template PoliCamera<float>::PoliCamera(PoliCamera const &cam);
+template PoliCamera<double>::PoliCamera(PoliCamera<double> const &cam);
+template PoliCamera<float>::PoliCamera(PoliCamera<float> const &cam);
 
-template PoliCamera<SlickScalar>::PoliCamera(int width, int height, const SlickScalar* params);
+template PoliCamera<double>::PoliCamera(const Eigen::VectorXf&);
+template PoliCamera<float>::PoliCamera(const Eigen::VectorXf&);
+
+template PoliCamera<double>::PoliCamera(int width, int height, const double* params);
 template PoliCamera<float>::PoliCamera(int width, int height, const float* params);
 
-template void PoliCamera<SlickScalar>::init(int width, int height, const SlickScalar* params);
+template void PoliCamera<double>::init(int width, int height, const double* params);
 template void PoliCamera<float>::init(int width, int height, const float* params);
 
-template Eigen::Matrix<SlickScalar, 2, 2> PoliCamera<SlickScalar>::GetProjectionDerivatives(
-    const Eigen::Matrix<SlickScalar, 2, 1>& v2_camplane) const;
+template Eigen::Matrix<double, 2, 2> PoliCamera<double>::GetProjectionDerivatives(
+  const Eigen::Matrix<double, 2, 1>& v2_camplane) const;
 template Eigen::Matrix<float, 2, 2> PoliCamera<float>::GetProjectionDerivatives(
     const Eigen::Matrix<float, 2, 1>& v2_camplane) const;
 
-template Eigen::Matrix<SlickScalar, 2, PoliCamera<SlickScalar>::param_n_> PoliCamera<SlickScalar>::GetParameterDerivs(
-    const Eigen::Matrix<SlickScalar, 2, 1>& v2_camplane) const;
+template Eigen::Matrix<double, 2, PoliCamera<double>::param_n_> PoliCamera<double>::GetParameterDerivs(
+  const Eigen::Matrix<double, 2, 1>& v2_camplane) const;
 template Eigen::Matrix<float, 2, PoliCamera<float>::param_n_> PoliCamera<float>::GetParameterDerivs(
     const Eigen::Matrix<float, 2, 1>& v2_camplane) const;
 
-template void PoliCamera<SlickScalar>::UpdateInternalParams();
+template void PoliCamera<double>::UpdateInternalParams();
 template void PoliCamera<float>::UpdateInternalParams();
 
-template void PoliCamera<SlickScalar>::set_parameters(
-    const Eigen::Matrix<SlickScalar, PoliCamera<SlickScalar>::param_n_, 1>& vCPs);
+template void PoliCamera<double>::set_parameters(
+  const Eigen::Matrix<double, PoliCamera<double>::param_n_, 1>& vCPs);
 template void PoliCamera<float>::set_parameters(
     const Eigen::Matrix<float, PoliCamera<float>::param_n_, 1>& vCPs);
 
