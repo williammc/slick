@@ -1,12 +1,12 @@
 // Copyright 2014 The Slick Authors. All rights reserved.
+#include <iostream>
 #include <utility>
 #include <vector>
-#include <Eigen/Eigen>
+#include <Eigen/Core>
 
 #include "slick/math/se3.h"
 #include "slick/util/mestimator.h"
 #include "slick/util/common.h"
-#include "slick/slick_api.h"
 
 namespace slick {
 
@@ -256,7 +256,7 @@ inline int CalcThreePointPoses(const Eigen::Matrix<Scalar, 3, 1> xi[],
     }
     return count;
   } catch(std::exception& e) {
-    std::cout << "Threepointpose.h:: Oops: " << e.what() << std::endl;
+    std::cerr << "Threepointpose.h:: Oops: " << e.what() << std::endl;
   return 0;
   }
 }

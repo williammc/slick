@@ -3,7 +3,6 @@
 #include <cmath>
 #include <Eigen/Dense>
 #include "slick/datatypes.h"
-#include "slick/slick_api.h"
 
 namespace slick {
 
@@ -16,7 +15,7 @@ namespace slick {
 // @ingroup gEquations
 template <class Scalar = SlickScalar, int Size = Eigen::Dynamic,
     class Decomposition = Eigen::LDLT<Eigen::Matrix<Scalar, Size, Size> > >
-class SLICK_API WLS {
+class WLS {
 public:
   // Default constructor or construct with the number of dimensions for the Dynamic case
   explicit WLS(int size = Size) {

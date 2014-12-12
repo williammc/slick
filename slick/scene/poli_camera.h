@@ -4,7 +4,7 @@
 // Welcome suggestions & comments about camera's models & calibration techniques.
 #pragma once
 #include <memory>
-#include <Eigen/Eigen>
+#include <Eigen/Core>
 #include "slick/math/se3.h"
 #include "slick/util/common.h"
 
@@ -19,12 +19,13 @@ namespace slick {
 /// Unprojection(2D to 3D, at camera plane where Zc=1.)
 template<typename Scalar = SlickScalar>
 class PoliCamera {
- public:
   typedef Eigen::Matrix<Scalar, 2, 1> Vec2_t;
   typedef Eigen::Matrix<Scalar, 3, 1> Vec3_t;
   typedef Eigen::Matrix<Scalar, 6, 1> Vec6_t;
   typedef Eigen::Matrix<Scalar, 8, 1> Vec8_t;
   typedef Eigen::Matrix<Scalar, 2, 2> Mat2_t;
+ public:
+   typedef std::shared_ptr<PoliCamera> Ptr;
   typedef Scalar ScalarType;
   /// Camera params number (fx,fy,cx,cy,k1,k2)
   static const int param_n_ = 6;
@@ -112,9 +113,8 @@ class PoliCamera {
     return pt;
   }
 
-  Eigen::Matrix<Scalar, 2, 2> GetProjectionDerivatives(
-      const Vec2_t& pt) const {
-    auto derivs = Eigen::Matrix<Scalar, 2, 2>::Identity();
+  Eigen::Matrix<Scalar, 2, 2> GetProjectionDerivatives(const Vec2_t& pt) const {
+    Eigen::Matrix<Scalar, 2, 2> derivs = Eigen::Matrix<Scalar, 2, 2>::Identity();
     Scalar r2 = pt.squaredNorm();
     Scalar t = params_[5]*r2;
     derivs *= 1 + r2*(params_[4] + t);
@@ -143,7 +143,6 @@ class PoliCamera {
     params_[1] *= static_cast<SlickScalar>(h)/old_h;
     params_[2] *= static_cast<SlickScalar>(w)/old_w;
     params_[3] *= static_cast<SlickScalar>(h)/old_h;
-    UpdateInternalParams();
   }
 
   Vec2_t ImageSize() const {
@@ -162,7 +161,6 @@ class PoliCamera {
     params_[1] *= static_cast<SlickScalar>(size[1]) / old_h;
     params_[2] *= static_cast<SlickScalar>(size[0]) / old_w;
     params_[3] *= static_cast<SlickScalar>(size[1]) / old_h;
-    UpdateInternalParams();
   }
 
   // For Calibration purposes --------------------------------------------------
@@ -195,12 +193,12 @@ class PoliCamera {
   }
   void SetParameters(
     const Eigen::Matrix<Scalar, PoliCamera<Scalar>::param_n_, 1>& params) {
-    set_parameters(params);
+    params_ = params;
   }
 
  protected:/// common method for initializing internal params
   void Init(const Eigen::VectorXf& params) {
-    image_size_ = prams.head<2>().cast<Scalar>();
+    image_size_ = params.head<2>().cast<Scalar>();
     params_ = params.segment<6>(2).cast<Scalar>();
   }
 

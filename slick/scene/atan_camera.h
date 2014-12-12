@@ -23,7 +23,8 @@ class AtanCamera {
   typedef Eigen::Matrix<Scalar, 5, 1> Vec5_t;
   typedef Eigen::Matrix<Scalar, 8, 1> Vec8_t;
   typedef Eigen::Matrix<Scalar, 2, 2> Mat2_t;
- public:
+public:
+  typedef std::shared_ptr<AtanCamera> Ptr;
   typedef Scalar ScalarType;
   enum ParamNumber { param_n_ = 5 };
   /// Camera params number (width, height, fx, fy, cx, cy, w)
@@ -31,9 +32,9 @@ class AtanCamera {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   /// explicit default constructor
   AtanCamera() {
-    Vec8_t v8;
-    v8 << 640, 480, 500, 500, 320, 240, 0;
-    Init(v8);
+    Eigen::VectorXf v(7);
+    v << 640, 480, 500, 500, 320, 240, 0;
+    Init(v);
   }
 
   /// convenient constructor
@@ -51,7 +52,7 @@ class AtanCamera {
   /// Projection of @v_cam (2D or 3D point on camera plane) to image plane.
   template<typename OtherDerived>
   Vec2_t Project(const Eigen::MatrixBase<OtherDerived>& v_cam) const {
-    return LinearProject(radial_factor(v_cam) * v_cam);
+    return LinearProject(radial_distort(v_cam) * v_cam);
   }
 
   /// Unprojection of 2D point on image plane to 3D point on camera plane (Z=1)
@@ -151,7 +152,7 @@ class AtanCamera {
     derivs(0, 3) = 0;
     derivs(0, 4) = params_[0] * (k1 + k2 + k3) * pt[0];
 
-    derivs(1, 0) = 0
+    derivs(1, 0) = 0;
     derivs(1, 1) = v2[1];
     derivs(1, 2) = 0;
     derivs(1, 3) = 1;
@@ -167,21 +168,21 @@ class AtanCamera {
  protected:
   /// common method for initializing internal params
   void Init(const Eigen::VectorXf& params) {
-    image_size_ = prams.head<2>();
-    params_ = params.segment<5>(2);
+    image_size_ = params.head<2>().cast<Scalar>();
+    params_ = params.segment<5>(2).cast<Scalar>();
   }
 
   /// radial factor : distorted / undistorted radius
-  Scalar radial_factor(const Vec2_t& v_cam) const {
+  Scalar radial_distort(const Vec2_t& v_cam) const {
     auto const r2 = v_cam.dot(v_cam);
     auto const w2 = params_[4]*params_[4];
     auto const fac = w2 * r2;
-    std::array<Scalar, 3> cons = {-1.0/3.0, 1.0/5.0, -1.0/7.0};
+    Scalar cons[3] = {-1.0/3.0, 1.0/5.0, -1.0/7.0};
     Scalar term = 1.0;
     Scalar scale = term;
     for (int i = 0; i < 3; ++i) {
-      term *= factor;
-      scale += term*cons[i];
+      term *= fac;
+      scale += term * cons[i];
     }
     return scale;
   }
