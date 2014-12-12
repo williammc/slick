@@ -5,7 +5,6 @@
 
 #include <Eigen/Eigen>
 #include <Eigen/MatrixFunctions>
-#include "slick/slick_api.h"
 
 #include "slick/datatypes.h"
 
@@ -26,7 +25,7 @@ template <typename P, int N> class SL;
 // This choice represents the fact that SL(n) can be interpreted as the product
 // of all symmetric matrices with det() = 1 times SO(n).
 template <typename Precision = SlickScalar, int N = Eigen::Dynamic>
-class SLICK_API SL {
+class SL {
   typedef Eigen::Matrix<Precision, N, N> MatrixType;
 
  public:

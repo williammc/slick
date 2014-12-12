@@ -1,154 +1,91 @@
 // Copyright 2014 The Slick Authors. All rights reserved.
 #pragma once
 #include <vector>
-#include <Eigen/Dense>
 #include "slick/datatypes.h"
-#include "slick/slick_api.h"
 
 namespace slick {
 
-// representation of 2D line/line segment
-struct SLICK_API Line2d {
-  // Default Constructor.
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  Line2d() {}
+/// Perpendicular distance from point to line in 2D space
+/// @ref: http://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+template<typename Scalar>
+inline Scalar perpen_dist_to_line(const Eigen::Matrix<Scalar, 2, 1>& p,
+                                  const Vec3f& leq) {
+  const Scalar t = leq[0] * p[0] + leq[1] * p[1] + leq[2];
+  return std::fabs(t) / std::sqrt(leq[0] * leq[0] + leq[1] * leq[1]);
+}
 
-  // Constructor with 2 points
-  Line2d(const Eigen::Vector2d& pt1, const Eigen::Vector2d& pt2, bool linevec = false);
+/// Perpen. distance from point @p to line (@line_p1, @line_p2)
+/// @ref: http://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+template<typename Scalar>
+inline Scalar perpen_dist_to_line(const Eigen::Matrix<Scalar, 2, 1>& p,
+                                  const Eigen::Matrix<Scalar, 2, 1>& line_p1,
+                                  const Eigen::Matrix<Scalar, 2, 1>& line_p2) {
+  const Scalar dx = line_p2[0] - line_p1[0];
+  const Scalar dy = line_p2[1] - line_p1[1];
+  return std::fabs(dy * p[0] - dx * p[1] - line_p1[0] * line_p2[1] + line_p1[1] * line_p2[0]) /    
+            std::sqrt(dx * dx + dy * dy);
+}
 
-  // Constructor for common line-equation (a,b,c)
-  Line2d(SlickScalar a, SlickScalar b, SlickScalar c);
-
-  // best-fitting line through point cloud (using SVD)
-  explicit Line2d(const std::vector<Eigen::Vector2d> &pts);
-
-  // value consider zero (e.x: identical points) if less than line precision.
-  bool is_zero(SlickScalar d) const{
-    if (d < epsilon)
-      return true;
-    return false;
+/// compute 2D line equation given 2 2D points on the line
+template<typename Scalar>
+inline Vec3f line_equation(const Eigen::Matrix<Scalar, 2, 1>& p1,
+                           const Eigen::Matrix<Scalar, 2, 1>& p2) {
+  if (p1[0] != p2[0]) {
+    const Scalar m = (p2[1] - p1[1])/(p2[0] - p1[0]);
+    const Scalar b = p1[1] - m * p1[0];
+    return Vec3f(m, -1, b);
+  } else {
+    const Scalar m = (p2[0] - p1[0]) / (p2[1] - p1[1]);
+    const Scalar b = p1[0] - m * p1[1];
+    return Vec3f(-1, m, b);
   }
+}
 
-  // Shifts the line by given vector
-  Line2d shift_line_by_vector(const Eigen::Vector2d &vector) const {
-    return Line2d(point1 + vector, point2 + vector);
+/// get a point on given line (@line_eq)
+/// each input @index has unique output point
+template<typename Scalar>
+inline Eigen::Matrix<Scalar, 2, 1> get_a_point(const Vec3f& line_eq, unsigned index) {
+  index = index + 1;  // zero index cause problem
+  Eigen::Matrix<Scalar, 2, 1> apoint(index, index);  // online point
+  if (line_eq[1] != 0) {
+    apoint[1] = (-line_eq[0] * Scalar(index) - line_eq[2]) / line_eq[1];
+  } else {
+    apoint[0] = (-line_eq[1] * Scalar(index) - line_eq[2]) / line_eq[0];
   }
+  return apoint;
+}
 
-  Line2d scale_line(SlickScalar scale) {
-    return Line2d(point1 * scale, point2 * scale);
-  }
+/// @return projected point of input point (@p) onto given line (@line_eq)
+template<typename Scalar>
+inline Eigen::Matrix<Scalar, 2, 1> project_point(
+  const Eigen::Matrix<Scalar, 2, 1>& p, const Vec3f& line_eq) {
+  const Eigen::Matrix<Scalar, 2, 1> n = line_eq.segment<2>(0).normalized();
+  const Eigen::Matrix<Scalar, 2, 1> line_vec(-n[1], n[0]);
+  const Eigen::Matrix<Scalar, 2, 1> apoint = get_a_point(line_eq, 1);
+  const Scalar s = (p - apoint).transpose() * line_vec;
 
-  bool operator == (const Line2d &line) {
-    if ((point1 == line.point1) && (point2 == line.point2))
-      return true;
-    else
-      return false;
-  }
+  return apoint + line_vec * s;
+}
 
-  // Return length of the line segment
-  SlickScalar length() const {
-    return ((point1 - point2).norm());
-  }
+/// @return projected point of input point (@p) onto given line (@line_points)
+/// @line_points is (x1, y1, x2, y2)
+template<typename Scalar>
+inline Eigen::Matrix<Scalar, 2, 1> project_point(
+  const Eigen::Matrix<Scalar, 2, 1>& p, 
+  const Eigen::Matrix<Scalar, 2, 1>& p1,
+  const Eigen::Matrix<Scalar, 2, 1>& p2) {
+  const Eigen::Matrix<Scalar, 2, 1> line_vec = (p1 - p2).normalized();
+  const Scalar s = (p - p1).transpose() * line_vec;
 
-  // Intersection of two lines - return true if intersection exists
-  bool IntersectLines(const Line2d& line, Eigen::Vector2d& intersection) const;
+  return p1 + line_vec * s;
+}
 
-
-  // check if two line segments intersect (does not return intersection point)
-  bool CheckIntersectLines(const Line2d& line) const;
-
-
-  // Returns orthogonal line through point pt
-  inline Line2d perpendicular_line(const Eigen::Vector2d &pt) const {
-    Line2d back(pt, pt + normal);
-    return back;
-  }
-
-  // Calculate absolute normal distance between line and point
-  SlickScalar perpendicular_distance(const Eigen::Vector2d& pt) const {
-    return (fabs((a*pt.x()+b*pt.y()+c) / sqrt(a*a+b*b)));
-  }
-
-  // Calculate signed normal distance between line and point
-  SlickScalar perpendicular_distance_signed(const Eigen::Vector2d& pt) const {
-    return ((a*pt.x()+b*pt.y()+c) / sqrt(a*a+b*b));
-  }
-
-  // Calculates squared normal distance between line and point (speedup)
-  SlickScalar squared_perpendicular_distance(const Eigen::Vector2d& pt) const {
-    SlickScalar a = a*pt.x()+b*pt.y()+c;
-    return((a*a)/ (a*a+b*b));
-  }
-
-  // Project a 2D point onto the line
-  Eigen::Vector2d project_pt(const Eigen::Vector2d &point) const {
-    SlickScalar s = (point - point1).transpose() * line_vector;
-    return point1 + line_vector * s;
-  }
-
-  // returns the quadrant (1..4) of the line vector (pt2 - pt1)
-  int GetQuadrant() const;
-
-  // returns the enclosed angle (in radians!!!)
-  SlickScalar enclosed_angle(const Line2d &line) const {
-    return std::acos(std::fabs(line_vector.transpose() * line.line_vector));
-  }
-
-  // Check if a point lies on this line subject to line precision (epsilon).
-  bool contains_point(const Eigen::Vector2d& pt) const {
-    const SlickScalar d = perpendicular_distance(pt);
-    if (d > epsilon )
-      return false;
-    if (!is_bounded) {
-      return true;  // line is unbounded
-    } else {
-      // projected length
-      SlickScalar length_ = (pt - point1).transpose() * line_vector;
-      if (length_ > 0.0)
-        return (length_ < length());
-      else
-        return false;
-    }
-  }
-
-  // Check if this line align with another line
-  bool is_aligned(const Line2d& another_line,
-                  const SlickScalar angle_threshold,
-                  const SlickScalar dist_threshold) const {
-    const SlickScalar cos_angle = line_vector.dot(another_line.line_vector);
-    if (std::fabs(cos_angle) > std::cos(M_PI/2-angle_threshold)) {
-      const SlickScalar len1 = perpendicular_distance(another_line.point1);
-      if (len1 < dist_threshold) {
-        const SlickScalar len2 = perpendicular_distance(another_line.point2);
-        if (len2 < dist_threshold)
-          return true;
-      }
-    }
-    return false;
-  }
-
-  // compare function for sorting (descending order - longest lines first)
-  static bool compare_length(const Line2d &l1, const Line2d &l2) {
-    return l1.length() > l2.length();
-  }
-
-  // Calculate a, b, and c out of two points on the line
-  void CalcParams(void);
-  void CalcPointsFromLineEquation(int offset = 100);
-
-  void calc_line_vector() {
-    line_vector = point2 - point1;
-    line_vector.normalize();
-    normal = Eigen::Vector2d(line_vector.y(), -line_vector.x());
-  }
-
-  static const SlickScalar epsilon;  // Define line precision.
-  Eigen::Vector2d point1;
-  Eigen::Vector2d point2;
-  Eigen::Vector2d normal;
-  bool is_bounded;
-  SlickScalar a, b, c;
-  Eigen::Vector2d line_vector;
-  SlickScalar score;
-};
+/// check if input point @p is inside two end points of given line-segment
+template<typename Scalar>
+inline bool is_point_in(const Eigen::Matrix<Scalar, 2, 1>& p,
+                        const Eigen::Matrix<Scalar, 2, 1>& p1,
+                        const Eigen::Matrix<Scalar, 2, 1>& p2) {
+  const Eigen::Matrix<Scalar, 2, 1> proj_p = project_point(p, line_points);
+  return (proj_p - p1).dot(proj_p - p2) <= 0;
+}
 }  // namespace slick

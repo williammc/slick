@@ -5,7 +5,6 @@
 
 #include <Eigen/Core>
 #include "slick/datatypes.h"
-#include "slick/slick_api.h"
 
 namespace slick {
 
@@ -27,7 +26,7 @@ typedef SO3Group<float> SO3f;
 /// Exponentiating this vector gives the matrix,
 /// and the logarithm of the matrix gives this vector.
 template <typename Precision = SlickScalar>
-class SLICK_API SO3Group {
+class SO3Group {
   typedef Eigen::Matrix<Precision, 3, 3> MatrixType;
 
  public:

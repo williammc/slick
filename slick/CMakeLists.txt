@@ -15,10 +15,11 @@ endforeach()
 
 # Library ======================================================================
 set(LIB_TARGET slick)
-add_library(${LIB_TARGET} ${Slick_LIB_TYPE} ${slick_sources})
+add_library(${LIB_TARGET} ${slick_sources})
 set_property(TARGET ${LIB_TARGET} PROPERTY FOLDER "slick_libs")
+set_property(TARGET ${LIB_TARGET} PROPERTY LINKER_LANGUAGE CXX)
 
-list(APPEND Slick_LIBS ${LIB_TARGET})
+#list(APPEND Slick_LIBS ${LIB_TARGET})
 
 # Tests ========================================================================
 if(Slick_WITH_TEST AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test)

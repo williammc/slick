@@ -4,7 +4,6 @@
 #include <type_traits>
 #include <Eigen/Eigen>
 #include "slick/datatypes.h"
-#include "slick/slick_api.h"
 
 namespace slick {
 
@@ -21,7 +20,7 @@ typedef SO2Group<float> SO2f;
 /// matrices are members of the Special Orthogonal Lie group SO2Group.
 /// This group can be parameterised with one number (the rotation angle).
 template <typename Precision = SlickScalar>
-class SLICK_API SO2Group {
+class SO2Group {
   typedef Eigen::Matrix<Precision, 2, 2> MatrixType;
 
  public:

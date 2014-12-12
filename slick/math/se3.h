@@ -1,7 +1,6 @@
 // Copyright 2014 The Slick Authors. All rights reserved.
 #pragma once
 #include "slick/math/so3.h"
-#include "slick/slick_api.h"
 
 namespace slick {
 
@@ -23,7 +22,7 @@ typedef SE3Group<float> SE3f;
 /// and length the amount of rotation (in radians), as for SO3Group
 /// @ingroup math
 template <typename Precision = SlickScalar>
-class SLICK_API SE3Group {
+class SE3Group {
   typedef Eigen::Matrix<Precision, 4, 4> MatrixType;
 
  public:

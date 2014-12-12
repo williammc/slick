@@ -2,7 +2,6 @@
 #pragma once
 #include "slick/datatypes.h"
 #include "slick/math/so2.h"
-#include "slick/slick_api.h"
 
 namespace slick {
 

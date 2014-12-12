@@ -43,14 +43,6 @@ option(Slick_WITH_EXAMPLES "Build the library with UI" OFF)
 set(CMAKE_CXX_FLAGS ${Slick_CXX_FLAGS})
 cmaker_common_build_setting()
 
-# Allow the developer to select if Dynamic or Static libraries are built
-option(Slick_BUILD_SHARED_LIBS "Build Shared Libraries (preferred and required for the g2o plugin system)" OFF)
-set(Slick_LIB_TYPE STATIC)
-if(Slick_BUILD_SHARED_LIBS)
-  set(Slick_LIB_TYPE SHARED)
-  add_definitions(-DSlick_SHARED_LIBS)
-endif()
-
 ## External libraries (included in this repo) ==================================
 # Eigen
 set(EIGEN_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/slick_external)

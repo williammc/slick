@@ -1,11 +1,9 @@
 // Copyright 2014 The Slick Authors. All rights reserved.
 #pragma once
-#include <Eigen/Dense>
 #include "slick/datatypes.h"
-#include "slick/slick_api.h"
 
 namespace slick {
-struct SLICK_API Line3d {
+struct Line3d {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Line3d() {}

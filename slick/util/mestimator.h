@@ -4,72 +4,105 @@
 #include <cassert>
 #include <algorithm>
 
-#include "slick/slick_api.h"
-
 namespace slick {
 
-template <typename Precision>
-struct SLICK_API MEstimator {
+template <typename Scalar>
+struct MEstimator {
   MEstimator() {}
   virtual ~MEstimator() {}
-  typedef Precision value_type;
-  virtual Precision compute_sigma_squared(std::vector<Precision> values) = 0;
-  virtual Precision weight(Precision error_squared) const = 0;
+  typedef Scalar value_type;
+  virtual Scalar compute_sigma_squared(std::vector<Scalar> values) = 0;
+  virtual Scalar weight(Scalar error_squared) const = 0;
   virtual int get_outliers() const = 0;
-  virtual Precision get_sigma_squared() const = 0;
+  virtual Scalar get_sigma_squared() const = 0;
 };
 
-template <typename Precision>
-struct SLICK_API LeastSquares : public MEstimator<Precision> {
-  LeastSquares();
-  Precision sigmaSquared;
+template <typename Scalar>
+struct LeastSquares : public MEstimator<Scalar> {
+  LeastSquares() : sq_sigma(0) {}
+  Scalar sq_sigma;
 
-  Precision compute_sigma_squared(std::vector<Precision> values);
-  Precision weight(Precision error_squared) const { return 1; }
+  Scalar compute_sigma_squared(std::vector<Scalar> values) {
+    sq_sigma = 0;
+    if (values.size() <= 0)
+      return sq_sigma;
+    for (typename std::vector<Scalar>::const_iterator i = values.begin();
+        i != values.end(); ++i)
+      sq_sigma += *i;
+    sq_sigma /= values.size();
+    return sq_sigma;
+  }
+
+  Scalar weight(Scalar error_squared) const { return 1; }
   int get_outliers() const { return 0; }
-  Precision get_sigma_squared() const { return sigmaSquared; }
+  Scalar get_sigma_squared() const { return sq_sigma; }
 };
 
-template <typename Precision>
-struct SLICK_API Tukey : public MEstimator<Precision> {
-  Precision sigmaSquared;
+template <typename Scalar>
+struct Tukey : public MEstimator<Scalar> {
+  Scalar sq_sigma;
   mutable int outliers;
 
-  Tukey();
+  Tukey() : sq_sigma(0), outliers(0) {}
 
-  Precision compute_sigma_squared(std::vector<Precision> values);
-  Precision weight(Precision error_squared) const;
+  Scalar compute_sigma_squared(std::vector<Scalar> values) {
+    if (values.size() == 0)
+      return 0;
+    std::sort(values.begin(), values.end());
+    Scalar median_squared = values[values.size()/2];
+    if (median_squared == 0)
+      median_squared = Scalar(1.e-19);
+    // from Georg Klein
+    Scalar sigma = Scalar(1.4826) *
+        (1 + Scalar(5) / (values.size() * 2 - 6)) * sqrt(median_squared);
+    sigma = Scalar(4.6851) * sigma;
+    sq_sigma = sigma * sigma;
+    return sq_sigma;
+  }
+
+  Scalar weight(Scalar error_squared) const {
+    if (error_squared > sq_sigma) {
+      ++outliers;
+      return 0;
+    } else {
+      const Scalar w = 1 - error_squared / sq_sigma;
+      return w*w;
+    }
+  }
+
   int get_outliers() const { return outliers; }
-  Precision get_sigma_squared() const { return sigmaSquared; }
+  Scalar get_sigma_squared() const { return sq_sigma; }
 };
 
-template <typename Precision>
-struct SLICK_API Huber : public MEstimator<Precision> {
-  Precision sigmaSquared;
+template <typename Scalar>
+struct Huber : public MEstimator<Scalar> {
+  Scalar sq_sigma;
   mutable int outliers;
 
-  Huber();
+  Huber() : sq_sigma(0), outliers(0) {}
 
-  Precision compute_sigma_squared(std::vector<Precision> values);
-  Precision weight(Precision error_squared) const;
+  Scalar compute_sigma_squared(std::vector<Scalar> values) {
+    assert(values.size() > 0);
+    std::sort(values.begin(), values.end());
+    Scalar median_squared = values[values.size()/2];
+    // from Georg Klein
+    Scalar sigma = Scalar(1.4826) *
+        (1 + Scalar(5) / (values.size() * 2 - 6)) * sqrt(median_squared);
+    sigma = Scalar(1.345) * sigma;
+    sq_sigma = sigma * sigma;
+    return sq_sigma;
+  }
+
+  Scalar weight(Scalar error_squared) const {
+    if (error_squared > sq_sigma) {
+      ++outliers;
+      return sqrt(sq_sigma/error_squared);
+    } else {
+      return 1;
+    }
+  }
+
   int get_outliers() const { return outliers; }
-  Precision get_sigma_squared() const { return sigmaSquared; }
+  Scalar get_sigma_squared() const { return sq_sigma; }
 };
-
-// Instantiate template functions ==============================================
-//#define INSTANTIATE_MESTIMATORS(T)                                             \
-//template struct SLICK_API MEstimator<T>;\
-//template struct SLICK_API LeastSquares<T>;\
-//template struct SLICK_API Tukey<T>;\
-//template struct SLICK_API Huber<T>;
-////template SLICK_API T LeastSquares<T>::compute_sigma_squared(std::vector<T>);\
-////template SLICK_API Tukey<T>::Tukey();\
-////template SLICK_API T Tukey<T>::compute_sigma_squared(std::vector<T>);\
-////template SLICK_API T Tukey<T>::weight(T) const;\
-////template SLICK_API Huber<T>::Huber();\
-////template SLICK_API T Huber<T>::compute_sigma_squared(std::vector<T>);\
-////template SLICK_API T Huber<T>::weight(T) const;
-//
-//INSTANTIATE_MESTIMATORS(float)
-//INSTANTIATE_MESTIMATORS(double)
 }  // namespace slick
