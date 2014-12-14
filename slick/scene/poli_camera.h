@@ -92,7 +92,7 @@ class PoliCamera {
   /// @param  pt[in] 3D point
   /// @return projected 2D point without distortion
   template<typename OtherDerived>
-  Vec2_t ProjectLinear(const Eigen::MatrixBase<OtherDerived>& pt) const {
+  Vec2_t LinearProject(const Eigen::MatrixBase<OtherDerived>& pt) const {
     Vec2_t loc;
     loc[0] = params_[0]*pt[0] + params_[2];
     loc[1] = params_[1]*pt[1] + params_[3];
@@ -103,7 +103,7 @@ class PoliCamera {
   /// @param vIn2DPoint undistorting 2D point
   /// @return 3D point at image plane that z=1
   template<typename OtherDerived>
-  Vec2_t UnProjectLinear(const Eigen::MatrixBase<OtherDerived>& loc) const {
+  Vec2_t LinearUnProject(const Eigen::MatrixBase<OtherDerived>& loc) const {
     Vec2_t pt;
     /// Transfer from Pixel coordinate to (u,v) coordinate
     pt[0] = loc[0];

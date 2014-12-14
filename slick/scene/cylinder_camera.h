@@ -7,7 +7,6 @@
 #include <Eigen/Eigen>
 #include "slick/math/se3.h"
 #include "slick/util/common.h"
-#include "slick/slick_api.h"
 
 namespace slick {
 
@@ -16,7 +15,7 @@ namespace slick {
 // seam is at -Z
 // image X is in positive rotation direction
 template<typename Scalar = float>
-class SLICK_API Cylinder {
+class Cylinder {
 public:
   Cylinder (const Eigen::Matrix<Scalar, 2, 1> & size,
             const Scalar & height_angle) {
