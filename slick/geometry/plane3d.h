@@ -1,7 +1,9 @@
 // Copyright 2014 The Slick Authors. All rights reserved.
 #pragma once
 #include <vector>
+#include <Eigen/Dense>
 #include "slick/geometry/line3d.h"
+#include "slick/util/mestimator.h"
 #include "slick/datatypes.h"
 
 namespace slick {
