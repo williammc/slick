@@ -286,18 +286,19 @@ inline Eigen::Matrix<Precision, 6, 1> SE3Group<Precision>::ln(
     const SE3Group<Precision>& SE3Group) {
   SO3Group<Precision> SO3GroupTemp = SE3Group.get_rotation();
   Eigen::Matrix<Precision, 3, 1> rot = SO3GroupTemp.ln();
-  const Precision theta = std::sqrt(rot.transpose()*rot);
+  const Precision t = rot.dot(rot);
+  const Precision theta = std::sqrt(t);
 
   Precision shtot = 0.5;
-  if (theta > 0.00001)
-    shtot = sin(theta/2)/theta;
+  if (theta > Precision(0.00001))
+    shtot = std::sin(Precision(theta / 2)) / theta;
 
   /// now do the rotation
   Eigen::Matrix<Precision, 3, 1> v3Rot = rot*-0.5;
   const SO3Group<Precision> halfrotator = SO3Group<Precision>::exp(v3Rot);
   Eigen::Matrix<Precision, 3, 1> rottrans = halfrotator * SE3Group.get_translation();
 
-  if (theta > 0.001) {
+  if (theta > Precision(0.001)) {
     rottrans -= rot *
         ((SE3Group.get_translation().transpose() * rot) *
          (1-2*shtot) / (rot.transpose()*rot));
@@ -307,8 +308,8 @@ inline Eigen::Matrix<Precision, 6, 1> SE3Group<Precision>::ln(
   rottrans /= (2 * shtot);
 
   Eigen::Matrix<Precision, 6, 1> result;
-  result.template segment<3>(0)=rottrans;
-  result.template segment<3>(3)=rot;
+  result.template segment<3>(0) = rottrans;
+  result.template segment<3>(3) = rot;
   return result;
 }
 
