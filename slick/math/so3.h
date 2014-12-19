@@ -143,8 +143,8 @@ class SO3Group {
         (matrix_.row(1)*(matrix_.row(2).transpose()))*matrix_.row(1);
     matrix_.row(2).normalize();
     /// check for positive determinant <=> correct rotation matrix should have determinant == 1
-    if ((matrix_.row(0).cross(matrix_.row(1))) * matrix_.row(2).transpose()
-        <= 0 ) {
+    if ((matrix_.row(0).cross(matrix_.row(1))).dot(matrix_.row(2))
+        <= Precision(0) ) {
       throw("Invalid Rotation Matrix");
     }
   }
@@ -229,25 +229,25 @@ inline SO3Group<Precision> SO3Group<Precision>::exp(const Eigen::MatrixBase<Deri
   using std::sin;
   using std::cos;
 
-  static const Precision one_6th = 1.0/6.0;
-  static const Precision one_20th = 1.0/20.0;
+  static const Precision one_6th = Precision(1.0) / Precision(6.0);
+  static const Precision one_20th = Precision(1.0) / Precision(20.0);
 
-  const Precision theta_sq = w.col(0).transpose()*w.col(0);
+  const Precision theta_sq = w.col(0).squaredNorm();
   const Precision theta = sqrt(theta_sq);
   Precision A, B;
   /// Use a Taylor series expansion near zero. This is required for
   /// accuracy, since sin t / t and (1-cos t)/t^2 are both 0/0.
-  if (theta_sq < 1e-8) {
-    A = 1.0 - one_6th * theta_sq;
-    B = 0.5;
+  if (theta_sq < Precision(1e-8)) {
+    A = Precision(1.0) - one_6th * theta_sq;
+    B = Precision(0.5);
   } else {
-    if (theta_sq < 1e-6) {
-      B = 0.5 - 0.25 * one_6th * theta_sq;
-      A = 1.0 - theta_sq * one_6th*(1.0 - one_20th * theta_sq);
+    if (theta_sq < Precision(1e-6)) {
+      B = Precision(0.5) - Precision(0.25) * one_6th * theta_sq;
+      A = Precision(1.0) - theta_sq * one_6th*(Precision(1.0) - one_20th * theta_sq);
     } else {
-      const Precision inv_theta = 1.0/theta;
+      const Precision inv_theta = Precision(1.0) / theta;
       A = sin(theta) * inv_theta;
-      B = (1 - cos(theta)) * (inv_theta * inv_theta);
+      B = (Precision(1) - cos(theta)) * (inv_theta * inv_theta);
     }
   }
   MatrixType m;
@@ -264,41 +264,42 @@ inline Eigen::Matrix<Precision, 3, 1> SO3Group<Precision>::ln() const {
   Eigen::Matrix<Precision, 3, 1> result;
 
   const Precision cos_angle =
-      (matrix_(0, 0) + matrix_(1, 1) + matrix_(2, 2) - 1.0) * Precision(0.5);
-  result[0] = (matrix_(2, 1)-matrix_(1, 2))/2;
-  result[1] = (matrix_(0, 2)-matrix_(2, 0))/2;
-  result[2] = (matrix_(1, 0)-matrix_(0, 1))/2;
-  Precision sin_angle_abs = std::sqrt(result.transpose()*result);
-  if (cos_angle > M_SQRT1_2) {  /// [0 - Pi/4] use asin
-    if (sin_angle_abs > 0) {
+      (matrix_(0, 0) + matrix_(1, 1) + matrix_(2, 2) - Precision(1.0)) * Precision(0.5);
+  result[0] = (matrix_(2, 1) - matrix_(1, 2))/Precision(2);
+  result[1] = (matrix_(0, 2) - matrix_(2, 0))/Precision(2);
+  result[2] = (matrix_(1, 0) - matrix_(0, 1))/Precision(2);
+  const Precision t = result.squaredNorm();
+  Precision sin_angle_abs = (t > 0.0) ? sqrt(t) : Precision(0.0);
+  if (cos_angle > Precision(M_SQRT1_2)) {  /// [0 - Pi/4] use asin
+    if (sin_angle_abs > Precision(0)) {
       result *= asin(sin_angle_abs) / sin_angle_abs;
     }
-  } else if (cos_angle > -M_SQRT1_2) {  /// [Pi/4 - 3Pi/4] use acos, but antisymmetric part
+  } else if (cos_angle > - Precision(M_SQRT1_2)) {  /// [Pi/4 - 3Pi/4] use acos, but antisymmetric part
     const Precision angle = acos(cos_angle);
     result *= angle / sin_angle_abs;
   } else {  /// rest use symmetric part
     /// antisymmetric part vanishes, but still large rotation, need information from symmetric part
-    const Precision angle = M_PI - asin(sin_angle_abs);
+    const Precision angle = Precision(M_PI) - asin(sin_angle_abs);
     const Precision d0 = matrix_(0, 0) - cos_angle,
         d1 = matrix_(1, 1) - cos_angle,
         d2 = matrix_(2, 2) - cos_angle;
     Eigen::Matrix<Precision, 3, 1> r2;
     if (d0*d0 > d1*d1 && d0*d0 > d2*d2) {  /// first is largest, fill with first column
       r2[0] = d0;
-      r2[1] = (matrix_(1, 0)+matrix_(0, 1))/2;
-      r2[2] = (matrix_(0, 2)+matrix_(2, 0))/2;
+      r2[1] = (matrix_(1, 0) + matrix_(0, 1)) / Precision(2);
+      r2[2] = (matrix_(0, 2) + matrix_(2, 0)) / Precision(2);
     } else if (d1*d1 > d2*d2) {  /// second is largest, fill with second column
-      r2[0] = (matrix_(1, 0)+matrix_(0, 1))/2;
+      r2[0] = (matrix_(1, 0) + matrix_(0, 1)) / Precision(2);
       r2[1] = d1;
-      r2[2] = (matrix_(2, 1)+matrix_(1, 2))/2;
+      r2[2] = (matrix_(2, 1) + matrix_(1, 2)) / Precision(2);
     } else {  /// third is largest, fill with third column
-      r2[0] = (matrix_(0, 2)+matrix_(2, 0))/2;
-      r2[1] = (matrix_(2, 1)+matrix_(1, 2))/2;
+      r2[0] = (matrix_(0, 2) + matrix_(2, 0)) / Precision(2);
+      r2[1] = (matrix_(2, 1) + matrix_(1, 2)) / Precision(2);
       r2[2] = d2;
     }
     /// flip, if we point in the wrong direction!
-    if (r2.transpose() * result < 0)
-      r2 *= -1;
+    if (r2.dot(result) < Precision(0))
+      r2 *= Precision(-1);
     result = angle*r2.normalized();
   }
   return result;
