@@ -1,15 +1,18 @@
-Copyright (c) 2013 the AUTHORS. All rights reserved.
-
-License for Non-Commercial Use.
+Copyright (c) 2014 The Slick Authors. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
-modification, are NOT permitted if without the AUTHORS' permission.
+modification, are permitted provided that the following conditions are
+met:
 
-This software is available for general use by academic or non-profit researchers.
-This license does not grant the right to use this software or
-any derivation of it in a for-profit enterprise.
-For commercial use, please contact the AUTHORS.
-
+   * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+   * Neither the name of Slick. nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,4 +25,3 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
