@@ -1,5 +1,6 @@
 // Copyright 2014 The Slick Authors. All rights reserved.
 #pragma once
+#include <Eigen/Geometry>
 #include "slick/math/so3.h"
 
 namespace slick {
