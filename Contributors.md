@@ -1,4 +1,4 @@
-Here includes the list of contributors.
+# Here includes the list of contributors.
 
-# Lead contributors
-William McCohen <william.mccohen@gmail.com> 
+William McCohen <william.mccohen@gmail.com>
+Gerhard Reitmayr
