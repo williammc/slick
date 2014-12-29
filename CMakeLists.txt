@@ -5,14 +5,22 @@ project(${THE_PROJECT_NAME})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)  # for organizing code to folders
 
 # Look for our CMake modules paths
-if(NOT CMAKER_ROOT OR CMAKER_ROOT STREQUAL "")
-  get_filename_component(CMAKER_ROOT $ENV{CMAKER_ROOT} ABSOLUTE)
-  message(STATUS "CMAKER_ROOT:${CMAKER_ROOT}")
-  if(NOT CMAKER_ROOT)
-    message(ERROR "Environment variable CMAKER_ROOT not set!")
-  endif()
-  list(APPEND CMAKE_MODULE_PATH ${CMAKER_ROOT}/cmake/modules ${CMAKER_ROOT}/cmake)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/CMakerCommonUtil.cmake)
+  set(CMAKER_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+else()
+find_path(CMAKER_ROOT NAMES cmake/CMakerCommonUtil.cmake
+            PATHS ${CMAKE_CURRENT_SOURCE_DIR}
+                  $ENV{CMAKER_ROOT})
 endif()
+if(NOT CMAKER_ROOT)
+  message(ERROR "Environment variable CMAKER_ROOT not set!")
+endif()
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKER_ROOT}/cmake
+                              ${CMAKER_ROOT}/cmake/modules
+                              ${CMAKE_CURRENT_SOURCE_DIR}/cmake
+                              ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
+                              ${CMAKE_CURRENT_BINARY_DIR})
 
 set(Slick_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 if(NOT THE_PROJECT_ROOT OR THE_PROJECT_ROOT STREQUAL "")

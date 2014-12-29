@@ -2,3 +2,4 @@ build-*
 bin/*
 lib/*
 external/eigen-3.2.2-old/*
+.idea/*

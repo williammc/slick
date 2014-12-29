@@ -21,7 +21,7 @@ inline std::pair<Eigen::Matrix<Scalar, 3, 1>,Scalar> triangulate(
   const Eigen::Matrix<Scalar, 3, 4> mpose2 = pose2.get_matrix();
   Eigen::Matrix<Scalar, 4, 4> A;
   A.row(0) = point1[0] * mpose1.row(2) - mpose1.row(0);
-  A.row(1) = point1[1] * mmpose1.row(2) - mpose1.row(1);
+  A.row(1) = point1[1] * mpose1.row(2) - mpose1.row(1);
   A.row(2) = point2[0] * mpose2.row(2) - mpose2.row(0);
   A.row(3) = point2[1] * mpose2.row(2) - mpose2.row(1);
   Eigen::JacobiSVD<Eigen::Matrix<Scalar, 4, 4> > svdA(A, Eigen::ComputeFullU
