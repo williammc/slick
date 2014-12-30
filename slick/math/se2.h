@@ -44,9 +44,11 @@ class SE2Group {
   /// Right-multiply by another SE2Group (concatenate the two transformations)
   /// @param rhs The multipier
   template <typename P>
-  SE2Group<typename Eigen::internal::scalar_product_traits<
-      Precision, P>::ReturnType> operator*(const SE2Group<P>& rhs) const {
-    Eigen::Matrix<Precision, 2, 1> v2 = translation_ + rotation_*rhs.get_translation();
+  SE2Group<
+      typename Eigen::internal::scalar_product_traits<Precision, P>::ReturnType>
+  operator*(const SE2Group<P>& rhs) const {
+    Eigen::Matrix<Precision, 2, 1> v2 =
+        translation_ + rotation_ * rhs.get_translation();
     return SE2Group<typename Eigen::internal::scalar_product_traits<
         Precision, P>::ReturnType>(rotation_ * rhs.get_rotation(), v2);
   }
@@ -62,8 +64,8 @@ class SE2Group {
   /// Right-multiply by another matrix
   template <typename OtherDerived>
   typename Eigen::Matrix<Precision, OtherDerived::RowsAtCompileTime,
-                         OtherDerived::ColsAtCompileTime> operator*(
-      const Eigen::MatrixBase<OtherDerived>& other) const {
+                         OtherDerived::ColsAtCompileTime>
+  operator*(const Eigen::MatrixBase<OtherDerived>& other) const {
     Eigen::Matrix<Precision, OtherDerived::RowsAtCompileTime,
                   OtherDerived::ColsAtCompileTime> res = other;
     if (other.rows() == 3) {
@@ -73,8 +75,7 @@ class SE2Group {
       res.block(2, 0, 1, other.cols()) = other.block(2, 0, 1, other.cols());
     } else {
       res.block(0, 0, 2, other.cols()) =
-          rotation_ * other.block(0, 0, 2, other.cols()) +
-          translation_;
+          rotation_ * other.block(0, 0, 2, other.cols()) + translation_;
     }
     return res;
   }
@@ -148,7 +149,7 @@ class SE2Group {
 
   Eigen::Matrix<Precision, 2, 3> get_matrix() const {
     Eigen::Matrix<Precision, 2, 3> res;
-    res.template block<2, 2>(0 ,0) = rotation_.get_matrix();
+    res.template block<2, 2>(0, 0) = rotation_.get_matrix();
     res.template block<2, 1>(0, 2) = translation_;
     return res;
   }
@@ -227,8 +228,7 @@ inline std::ostream& operator<<(std::ostream& os,
 /// Read an SE2Group from a stream
 /// @relates SE2Group
 template <class Precision>
-    inline std::istream& operator>>(std::istream& is,
-                                    SE2Group<Precision>& rhs) {
+inline std::istream& operator>>(std::istream& is, SE2Group<Precision>& rhs) {
   for (int i = 0; i < 2; i++)
     is >> const_cast<Eigen::Matrix<Precision, 2, 2> >(
               rhs.get_rotation().get_matrix()).row(i) >>
@@ -242,9 +242,9 @@ template <class Precision>
 template <typename OtherDerived, typename Precision>
 inline Eigen::Matrix<typename Eigen::internal::scalar_product_traits<
                          typename OtherDerived::Scalar, Precision>::ReturnType,
-                     OtherDerived::RowsAtCompileTime, 3> operator*(
-    const Eigen::MatrixBase<OtherDerived>& lhs,
-    const SE2Group<Precision>& rhs) {
+                     OtherDerived::RowsAtCompileTime, 3>
+operator*(const Eigen::MatrixBase<OtherDerived>& lhs,
+          const SE2Group<Precision>& rhs) {
   Eigen::Matrix<typename Eigen::internal::scalar_product_traits<
                     typename OtherDerived::Scalar, Precision>::ReturnType,
                 OtherDerived::RowsAtCompileTime, 3> res;
@@ -261,14 +261,14 @@ inline Eigen::Matrix<typename Eigen::internal::scalar_product_traits<
 /// @relates SO2Group
 template <typename Precision1, typename Precision2>
 inline SE2Group<typename Eigen::internal::scalar_product_traits<
-    Precision1, Precision2>::ReturnType> operator*(
-    const SO2Group<Precision1>& lhs, const SE2Group<Precision2>& rhs) {
+    Precision1, Precision2>::ReturnType>
+operator*(const SO2Group<Precision1>& lhs, const SE2Group<Precision2>& rhs) {
   Eigen::Matrix<typename Eigen::internal::scalar_product_traits<
                     Precision1, Precision2>::ReturnType,
                 2, 1> v2 = lhs * rhs.get_translation();
   return SE2Group<typename Eigen::internal::scalar_product_traits<
       Precision1, Precision2>::ReturnType>(lhs * rhs.get_rotation(), v2);
 }
-}       // namespace slick
+}  // namespace slick
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::SE2f)
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::SE2d)

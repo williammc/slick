@@ -39,15 +39,15 @@ class SO2Group {
   /// Construct from an angle.
   explicit SO2Group(const Precision l) { *this = this->exp(l); }
 
-  // this strictly require C++11 enabled
-  /// Construct from list of 4 elements in row-major order of 2x2 matrix.
-  /// Currently, giving a list of less than 4 elements causes std::cerr.
+// this strictly require C++11 enabled
+/// Construct from list of 4 elements in row-major order of 2x2 matrix.
+/// Currently, giving a list of less than 4 elements causes std::cerr.
 #if _MSC_VER >= 1800
   SO2Group(std::initializer_list<Precision> l) {
     // this can be solved with static_assert in C++14
-    if(l.size() != 4)
+    if (l.size() != 4)
       std::cerr << "SO2 list constructor requires 4 elements" << std::endl;
-    Precision* t = const_cast<Precision*>(l.begin());
+    Precision *t = const_cast<Precision *>(l.begin());
     matrix_(0, 0) = *t++;
     matrix_(0, 1) = *t++;
     matrix_(1, 0) = *t++;
@@ -60,7 +60,8 @@ class SO2Group {
   /// Right-multiply by another rotation matrix
   template <typename P>
   SO2Group<Precision> operator*(const SO2Group<P> &rhs) const {
-//    static_assert(std::is_same<P, Precision>::value, "SO2::operator* expecting same scalar type");
+    //    static_assert(std::is_same<P, Precision>::value, "SO2::operator*
+    //    expecting same scalar type");
     SO2Group<Precision> res;
     res.matrix_ = matrix_ * rhs.matrix_;
     return res;
@@ -110,7 +111,7 @@ class SO2Group {
     SO2Group<Precision> res;
     res.matrix_(0, 0) = res.matrix_(1, 1) = std::cos(d);
     res.matrix_(1, 0) = std::sin(d);
-    res.matrix_(0, 1) = - res.matrix_(1, 0);
+    res.matrix_(0, 1) = -res.matrix_(1, 0);
     return res;
   }
 
@@ -141,8 +142,7 @@ inline std::ostream &operator<<(std::ostream &os,
 /// Read from a stream to SO2Group
 /// @relates SO2Group
 template <typename Precision>
-    inline std::istream &operator>>(std::istream &is,
-                                    SO2Group<Precision> &rhs) {
+inline std::istream &operator>>(std::istream &is, SO2Group<Precision> &rhs) {
   Eigen::Matrix<Precision, 2, 2> m;
   return is >> m;
   rhs = m;
@@ -151,12 +151,12 @@ template <typename Precision>
 /// Left-multiply by a Matrix
 /// @relates SO2Group
 template <typename OtherDerived, typename Precision>
-inline typename Eigen::ProductReturnType<
-    OtherDerived, Eigen::Matrix<Precision, 2, 2> >::Type operator*(
-    const Eigen::MatrixBase<OtherDerived> &lhs,
-    const SO2Group<Precision> &rhs) {
+inline typename Eigen::ProductReturnType<OtherDerived,
+                                         Eigen::Matrix<Precision, 2, 2> >::Type
+operator*(const Eigen::MatrixBase<OtherDerived> &lhs,
+          const SO2Group<Precision> &rhs) {
   return lhs * rhs.get_matrix();
 }
-}       // namespace slick
+}  // namespace slick
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::SO2f)
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(slick::SO2d)
