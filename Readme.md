@@ -15,3 +15,7 @@ For automatic code formating,  [clang-format](http://clang.llvm.org/docs/ClangFo
 # Dependencies (included in this repository)
 - [Eigen-3.2+](www.eigen.tuxfamily.org) (included in ~/root/external): for matrix operation
 - [gtest-1.7.0](code.google.com/p/googletest) (include in ~/root/external): for testing
+
+# Todo
+- add more unittests (e.x.: for geometry, scene)
+- modernize code (using clang-mondernize)
