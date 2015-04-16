@@ -261,13 +261,18 @@ inline int CalcThreePointPoses(const Eigen::Matrix<Scalar, 3, 1> xi[],
   }
 }
 
-template<typename Scalar>
-inline std::pair<bool, slick::SE3Group<Scalar> > ComputeRobustAbsolutPoseRANSACMLE
- (std::vector<std::pair<Eigen::Matrix<Scalar, 4, 1>,
-                        Eigen::Matrix<Scalar, 2, 1> > >
-  &observations) {
-  typedef std::vector<std::pair<Eigen::Matrix<Scalar, 4, 1>, Eigen::Matrix<Scalar, 2, 1> > > Observations;
-  typedef std::vector<slick::SE3Group<Scalar> > PotentialPoses;
+template <typename Scalar>
+inline std::pair<bool, slick::SE3Group<Scalar> >
+    ComputeRobustAbsolutPoseRANSACMLE(std::vector<
+        std::pair<Eigen::Matrix<Scalar, 4, 1>, Eigen::Matrix<Scalar, 2, 1> >,
+        Eigen::aligned_allocator<std::pair<Eigen::Matrix<Scalar, 4, 1>,
+                                           Eigen::Matrix<Scalar, 2, 1> > > >&
+                                          observations) {
+using Observations = std::vector<
+        std::pair<Eigen::Matrix<Scalar, 4, 1>, Eigen::Matrix<Scalar, 2, 1> >,
+        Eigen::aligned_allocator<std::pair<Eigen::Matrix<Scalar, 4, 1>,
+                                           Eigen::Matrix<Scalar, 2, 1> > > >;
+  using PotentialPoses = std::vector<slick::SE3Group<Scalar> >;
   PotentialPoses potential_poses;
   Eigen::Matrix<Scalar, 3, 1> world_points[3];
   Eigen::Matrix<Scalar, 2, 1> observed_points[3];
