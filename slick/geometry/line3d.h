@@ -3,74 +3,65 @@
 #include "slick/datatypes.h"
 
 namespace slick {
-struct Line3d {
- public:
+
+// 3D line segment
+template<typename Scalar>
+struct Line3DBase {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  Line3d() {}
+  using PointType = Eigen::Matrix<Scalar, 3, 1>;
 
-  Line3d(Eigen::Matrix<SlickScalar, 3, 1> pt1, Eigen::Matrix<SlickScalar, 3, 1> pt2, bool linevec = false)
-    : point1(pt1), point2(pt2) {
-    if (linevec) {
-      is_bounded = false;
-      point1 = pt1;
-      point2 = pt1 + pt2.normalized();
-    } else {
-      is_bounded = true;
-    }
-    line_vector = (point2 - point1).normalized();
+  Line3DBase() = default;
+  Line3DBase(const PointType& pt1, const PointType& pt2)
+    : pt1_(pt1), pt2_(pt2) {}
+
+  PointType project(const PointType& pt) const {
+    return project_point(pt, pt1_, pt2_);
   }
 
-  const Eigen::Matrix<SlickScalar, 3, 1>& linevec() const {
-    return line_vector;
+  Scalar perpendicular_distance(const PointType& pt) const {
+    return std::sqrt(perpen_sqdist_to_line(pt, pt1_, pt2_));
   }
 
-  const SlickScalar length() const {
-    return line_vector.norm();
+  Scalar perpendicular_squared_distance(const PointType& p) const {
+    return perpen_sqdist_to_line(pt, pt1_, pt2_);
   }
 
-  const bool isbounded() const {
-    return is_bounded;
+  PointType& point1() { return pt1_; }
+  const PointType& point1() const  { return pt1_; }
+
+  PointType& point2() { return pt2_; }
+  const PointType& point2() const { return pt2_; }
+
+  Scalar length() { return (pt2_ - pt1_).norm(); }
+  PointType line_vector() { return pt2_ - pt1_; }
+
+  // useful functionalities ====================================================
+  // @ref: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html 
+  static Scalar perpen_sqdist_to_line(const PointType& p, const PointType& pt1,
+    const PointType& pt2) {
+    const auto v = pt2 - pt1;
+    const auto t = v.cross(pt1 - p);
+    return t.squaredNorm()/v.squaredNorm();
   }
 
-  void set_linevec(Eigen::Matrix<SlickScalar, 3, 1> linevec) {
-    line_vector = linevec.normalized();
+  static PointType project_point(const PointType& pt, const PointType& pt1, const PointType& pt2) {
+    auto line_vec = (pt2 - pt1).normalized();
+    Scalar s = (pt - pt1).dot(line_vec);
+    return pt1 + line_vec * s;
   }
 
-
-  bool contains_point(const Eigen::Matrix<SlickScalar, 3, 1>& pt) const {
-    const SlickScalar d = perpendicular_distance(pt);
-    if (d > epsilon )
-      return false;
-    if (!is_bounded) {
-      return true;  // line is unbounded
-    } else {
-      // projected length
-      SlickScalar length_ = (pt - point1).transpose() * line_vector;
-      if (length_ > 0.0)
-        return (length_ < length());
-      else
-        return false;
-    }
+  /// check if input point @p is inside two end points of given line-segment
+  static bool is_point_in(const PointType& p,
+                          const PointType& p1,
+                          const PointType& p2) {
+    const PointType proj_p = project_point(p, p1, p2);
+    return (proj_p - p1).dot(proj_p - p2) <= 0;
   }
 
-  // Perpendicular distance from a point.
-  SlickScalar perpendicular_distance(const Eigen::Matrix<SlickScalar, 3, 1>& point) const {
-    const Eigen::Matrix<SlickScalar, 3, 1> p = project_pt(point);
-    return (p-point).norm();
-  }
-
-  // projects a 3D point onto the line
-  Eigen::Matrix<SlickScalar, 3, 1> project_pt(const Eigen::Matrix<SlickScalar, 3, 1> &point) const {
-    SlickScalar s = (point - point1).transpose() * line_vector;
-    return point1 + line_vector * s;
-  }
-
-  static const SlickScalar epsilon;  // Define line precision.
-
-  Eigen::Matrix<SlickScalar, 3, 1> point1;
-  Eigen::Matrix<SlickScalar, 3, 1> point2;
-  Eigen::Matrix<SlickScalar, 3, 1> line_vector;
-
-  bool is_bounded;
+ protected:
+  PointType pt1_, pt2_;
 };
+
+using Line3d = Line3DBase<double>;
+
 }  // namespace slick
