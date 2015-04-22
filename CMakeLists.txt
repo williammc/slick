@@ -5,16 +5,7 @@ project(${THE_PROJECT_NAME})
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)  # for organizing code to folders
 
 # Look for our CMake modules paths
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/CMakerCommonUtil.cmake)
-  set(CMAKER_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-else()
-find_path(CMAKER_ROOT NAMES cmake/CMakerCommonUtil.cmake
-            PATHS ${CMAKE_CURRENT_SOURCE_DIR}
-                  $ENV{CMAKER_ROOT})
-endif()
-if(NOT CMAKER_ROOT)
-  message(ERROR "Environment variable CMAKER_ROOT not set!")
-endif()
+set(CMAKER_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKER_ROOT}/cmake
                               ${CMAKER_ROOT}/cmake/modules
@@ -59,6 +50,7 @@ include_directories(external/eigen-3.2.2 external/eigen-3.2.2/unsupported)
 
 # GTest
 if(Slick_WITH_TEST AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/external/gtest-1.7.0)
+  enable_testing()
   add_subdirectory(external/gtest-1.7.0)
   include_directories(external/gtest-1.7.0/include)
   set_property(TARGET gtest PROPERTY FOLDER "external/gtest")

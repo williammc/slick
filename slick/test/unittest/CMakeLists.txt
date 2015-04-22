@@ -4,15 +4,6 @@ project(slick_unit_testing)
 # common settings
 cmaker_common_build_setting()
 
-##==============================================================================
-#find_package(GTest)
-#cmaker_print_status("GTEST_FOUND:${GTEST_FOUND}")
-
-# cmaker_print_status("GTEST_INCLUDE_DIRS:${GTEST_INCLUDE_DIRS}")
-# if(NOT GTEST_FOUND)
-#   return()
-# endif()
-
 # include_directories(${GTEST_INCLUDE_DIRS})
 set(GTEST_BOTH_LIBRARIES gtest gtest_main)
 
