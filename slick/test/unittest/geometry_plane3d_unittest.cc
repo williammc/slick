@@ -3,41 +3,91 @@
 #include "slick/geometry/plane3d.h"
 #include "slick/test/unittest/util.h"
 
-template <typename Scalar> inline Eigen::Matrix<Scalar, 3, 1> GenRandPoint() {
-  const int N = 1000;
-  const Scalar x = Scalar(std::rand()) / Scalar(RAND_MAX) * N;
-  const Scalar y = Scalar(std::rand()) / Scalar(RAND_MAX) * N;
-  const Scalar z = Scalar(std::rand()) / Scalar(RAND_MAX) * N;
-  return Eigen::Matrix<Scalar, 3, 1>(x, y, z);
+template <typename T> inline Eigen::Matrix<T, 3, 1> GenRandPoint() {
+  const T N = 10;
+  const T x = T(std::rand()) / T(RAND_MAX) * N;
+  const T y = T(std::rand()) / T(RAND_MAX) * N;
+  const T z = T(std::rand()) / T(RAND_MAX) * N;
+  return Eigen::Matrix<T, 3, 1>(x, y, z);
 }
+
+template <typename T>
+void check_on_plane(const slick::Plane3DBase<T> &pln,
+                    const Eigen::Matrix<T, 3, 1> &pt) {
+
+  const T t = pt.dot(pln.equation().head<3>()) + pln.equation()[3];
+  EXPECT_NEAR(std::fabs(t), 0.0, slick::Gap<T>());
+};
 
 // plane3d specific functions ==================================================
 template <typename T> void Project_Test() {
-  std::srand(std::time(nullptr)); // use current time as seed for random generator
-  slick::Line3DBase<T> line(GenRandPoint<T>(), GenRandPoint<T>());
-  const auto pr = line.project(GenRandPoint<T>());
-  const auto lv = (line.point2() - line.point1()).normalized();
-  const T t = (pr - line.point1()).normalized().dot(lv);
-  EXPECT_NEAR(std::fabs(t), 1.0, slick::Gap<T>());
+  std::srand(
+      std::time(nullptr)); // use current time as seed for random generator
+  slick::Plane3DBase<T> plane(GenRandPoint<T>(), GenRandPoint<T>(),
+                              GenRandPoint<T>());
+  const auto pr = plane.project(GenRandPoint<T>());
+  const auto eq = plane.equation();
+  const T t = pr[0] * eq[0] + pr[1] * eq[1] + pr[2] * eq[2] + eq[3];
+  EXPECT_NEAR(std::fabs(t), 0.0, slick::Gap<T>());
 }
 
-TEST(Line3DBaseTest, Project) {
+TEST(Plane3DBaseTest, Project) {
   Project_Test<double>();
   Project_Test<float>();
 }
 
 template <typename T> void perpendicular_distance_Test() {
-  std::srand(std::time(nullptr)); // use current time as seed for random generator
-  slick::Line3DBase<T> line(GenRandPoint<T>(), GenRandPoint<T>());
+  std::srand(
+      std::time(nullptr)); // use current time as seed for random generator
+  slick::Plane3DBase<T> plane(GenRandPoint<T>(), GenRandPoint<T>(),
+                              GenRandPoint<T>());
   const auto pt = GenRandPoint<T>();
-  const auto pr = line.project(pt);
-  const T t = line.perpendicular_distance(pt);
+  const auto pr = plane.project(pt);
+  const T t = plane.perpendicular_distance(pt);
   EXPECT_NEAR(t, (pt - pr).norm(), slick::Gap<T>());
 }
 
-TEST(Line3DBaseTest, perpendicular_distance) {
+TEST(Plane3DBaseTest, perpendicular_distance) {
   perpendicular_distance_Test<double>();
   perpendicular_distance_Test<float>();
+}
+
+template <typename T> void intersect_line_Test() {
+  std::srand(
+      std::time(nullptr)); // use current time as seed for random generator
+  slick::Plane3DBase<T> plane(GenRandPoint<T>(), GenRandPoint<T>(),
+                              GenRandPoint<T>());
+  slick::Line3DBase<T> line(GenRandPoint<T>(), GenRandPoint<T>());
+  auto res = plane.intersect(line);
+  if (res.first) {
+    check_on_plane(plane, res.second);
+  }
+}
+
+TEST(Plane3DBaseTest, intersect_line) {
+  intersect_line_Test<double>();
+  intersect_line_Test<float>();
+}
+
+template <typename T> void intersect_plane_Test() {
+  std::srand(
+      std::time(nullptr)); // use current time as seed for random generator
+  slick::Plane3DBase<T> plane1(GenRandPoint<T>(), GenRandPoint<T>(),
+                               GenRandPoint<T>());
+  slick::Plane3DBase<T> plane2(GenRandPoint<T>(), GenRandPoint<T>(),
+                               GenRandPoint<T>());
+  auto res = plane1.intersect(plane2);
+  if (res.first) {
+    check_on_plane(plane1, res.second.point1());
+    check_on_plane(plane1, res.second.point2());
+    check_on_plane(plane2, res.second.point1());
+    check_on_plane(plane2, res.second.point2());
+  }
+}
+
+TEST(Plane3DBaseTest, intersect_plane) {
+  intersect_plane_Test<double>();
+  intersect_plane_Test<float>();
 }
 
 int main(int argc, char **argv) {

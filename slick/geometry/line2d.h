@@ -17,7 +17,7 @@ template <typename Scalar> struct Line2DBase {
   }
 
   Scalar perpendicular_distance(const PointType &pt) const {
-    return perpen_dist_to_line(pt, pt1_, pt2_);
+    return std::sqrt(perpendicular_sqdistance(pt));
   }
 
   Scalar perpendicular_sqdistance(const PointType &pt) const {
@@ -38,8 +38,8 @@ template <typename Scalar> struct Line2DBase {
   PointType &point2() { return pt2_; }
   const PointType &point2() const { return pt2_; }
 
-  Scalar length() { return (pt2_ - pt1_).norm(); }
-  PointType line_vector() { return pt2_ - pt1_; }
+  Scalar length() const { return (pt2_ - pt1_).norm(); }
+  PointType line_vector() const { return pt2_ - pt1_; }
 
   // Useful functions ==========================================================
   /// Perpendicular distance from point to line in 2D space

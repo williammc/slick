@@ -19,7 +19,7 @@ template <typename Scalar> struct Line3DBase {
   }
 
   Scalar perpendicular_distance(const PointType &pt) const {
-    return std::sqrt(perpen_sqdist_to_line(pt, pt1_, pt2_));
+    return std::sqrt(perpendicular_squared_distance(pt));
   }
 
   Scalar perpendicular_squared_distance(const PointType &pt) const {
@@ -32,8 +32,8 @@ template <typename Scalar> struct Line3DBase {
   PointType &point2() { return pt2_; }
   const PointType &point2() const { return pt2_; }
 
-  Scalar length() { return (pt2_ - pt1_).norm(); }
-  PointType line_vector() { return pt2_ - pt1_; }
+  Scalar length() const { return (pt2_ - pt1_).norm(); }
+  PointType line_vector() const { return pt2_ - pt1_; }
 
   // useful functionalities ====================================================
   // @ref: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html

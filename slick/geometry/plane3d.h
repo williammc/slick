@@ -28,48 +28,63 @@ template <typename T> struct Plane3DBase {
   // Given plane equation ax + by + cz + d = 0
   Plane3DBase(const Vec4 &v4_plane) : pln_eq_(v4_plane) {}
 
-  void point() const {
-    const auto normal = normal();
+  PointType point() const {
+    const auto n = normal();
     const T d = pln_eq_[3];
     PointType point;
-    if (normal[0] != 0.0) {
-      T x = -(normal[1] + normal[2] + d) / normal[0];
+    if (n[0] != 0.0) {
+      T x = -(n[1] + n[2] + d) / n[0];
       point << x, 1, 1;
-    } else if (normal[1] != 0.0) {
-      T y = -(normal[0] + normal[2] + d) / normal[1];
+    } else if (n[1] != 0.0) {
+      T y = -(n[0] + n[2] + d) / n[1];
       point << 1, y, 1;
     } else {
-      T z = -(normal[0] + normal[1] + d) / normal[2];
+      T z = -(n[0] + n[1] + d) / n[2];
       point << 1, 1, z;
     }
     return point;
   }
 
-  T dist_to_point(const PointType &pt) const {
-    const auto point = point();
-    return std::fabs(normal().dot(point - pt));
+  /// @ref: http://www.9math.com/book/projection-point-plane
+  PointType project(const PointType &pt) const {
+    const T t = pln_eq_.head<3>().dot(pt) + pln_eq_[3];
+    const T s = pln_eq_.head<3>().squaredNorm();
+    const T t1 = t / s;
+    const T x = pt[0] - pln_eq_[0]*t1;
+    const T y = pt[1] - pln_eq_[1]*t1;
+    const T z = pt[2] - pln_eq_[2]*t1;
+    return PointType(x, y, z);
   }
 
-  std::pair<bool, PointType> intersect_line(Line3DBase<T> const &ln) const {
+  T perpendicular_distance(const PointType &pt) const {
+    return std::sqrt(perpendicular_sqdistance(pt));
+  }
+
+  T perpendicular_sqdistance(const PointType &pt) const {
+    const T t = pln_eq_.head<3>().dot(pt) + pln_eq_[3];
+    return t * t / normal().squaredNorm();
+  }
+
+  std::pair<bool, PointType> intersect(Line3DBase<T> const &ln) const {
     PointType intersection;
-    const auto normal = normal();
-    const auto point = point();
+    const auto n = normal();
+    const auto p = point();
     PointType lv = ln.line_vector();
 
-    if (std::fabs(lv.dot(normal)) < 1e-12)
-      return false;
+    if (std::fabs(lv.dot(n)) < 1e-12)
+      return std::make_pair(false, PointType());
 
     PointType lp = ln.point1();
-    T t = (point.dot(normal) - normal.dot(lp)) / (normal.dot(lv));
+    T t = (p.dot(n) - n.dot(lp)) / (n.dot(lv));
     intersection = lp + t * lv;
     return std::make_pair(true, intersection);
   }
 
-  std::pair<bool, Line3DBase<T>>
-  intersect_plane(const Plane3DBase &other_plane) const {
+  /// @ref: http://mathworld.wolfram.com/Plane-PlaneIntersection.html
+  std::pair<bool, Line3DBase<T>> intersect(const Plane3DBase &other_plane) const {
     Line3DBase<T> line;
-    const auto normal = normal();
-    const auto line_vector = normal.cross(other_plane.normal());
+    const auto n = normal();
+    const auto line_vector = n.cross(other_plane.normal());
     if (line_vector.norm() < 1.e-9) // two planes are parallel
       return std::make_pair(false, Line3DBase<T>());
     if (pln_eq_[3] == 0 && other_plane.pln_eq_[3] == 0) {
@@ -83,26 +98,22 @@ template <typename T> struct Plane3DBase {
     // a2*x + b2*y + c2*z + d2 = 0;
     // suppose point of intersection line is on Z=1 plane
     Eigen::Matrix<T, 2, 2> A;
-    A << normal[0], normal[1], other_plane.normal[0], other_plane.normal[1];
+    A << n[0], n[1], other_plane.normal()[0], other_plane.normal()[1];
     Eigen::Matrix<T, 2, 1> b;
-    b << -normal[2] - d, -other_plane.normal[2] - other_plane.d;
+    b << -n[2] - pln_eq_[3], -other_plane.normal()[2] - other_plane.pln_eq_[3];
     line.point1().segment<2>(0) = A.inverse() * b;
     line.point1()[2] = 1.0;
     line.point2() = line.point1() + line_vector;
-    std::make_pair(true, line);
+
+    return std::make_pair(true, line);
   }
 
-  PointType project_point(const PointType &pt) const {
-    Line3DBase<T> ln(pt, pt + normal);
-    PointType intp;
-    intersect_line(ln, intp);
-    return intp;
-  }
+  Eigen::Matrix<T, 3, 1> normal() const { return pln_eq_.head<3>(); }
 
-  decltype(pln_eq_.head<3>()) normal() const { return pln_eq_.head<3>(); }
+  Eigen::Matrix<T, 4, 1> equation() const { return pln_eq_; }
 
   /// Normalize normal
-  void noramlize() {
+  void normalize() {
     const T t = pln_eq_.head<3>().norm();
     pln_eq_ /= t;
   }
