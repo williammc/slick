@@ -9,6 +9,7 @@
 namespace slick {
 
 struct Plane3d {
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Plane3d() {
     point = Vec3::Zero();
     normal = Vec3::Zero();

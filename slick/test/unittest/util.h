@@ -46,7 +46,8 @@ inline void EXPECT_MATRIX_NEAR(const Eigen::MatrixBase<Derived1>& left,
 
 template <typename T>
 inline T Gap() {
-  if (typeid(T) == typeid(double)) return double(1.e-9);
-  if (typeid(T) == typeid(float)) return float(1.e-6);
+  if (typeid(T) == typeid(double)) return T(1.e-9);
+  if (typeid(T) == typeid(float)) return T(1.e-6);
+  return T(0);
 }
 }  // namespace slick
