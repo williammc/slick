@@ -82,9 +82,9 @@ template <typename T> void axisaligned_intersect_line_Test() {
     const auto pln = GenerateAxisAlignedPlane<T>(i, t);
     slick::Line3DBase<T> line(slick::GenRandPoint<T>(N),
                               slick::GenRandPoint<T>(N));
-    auto res = pln.intersect(line);
-    if (res.first) {
-      EXPECT_NEAR(t, res.second[i], slick::Gap<T>());
+    auto pt = pln.intersect(line);
+    if (pt) {
+      EXPECT_NEAR(t, (*pt)[i], slick::Gap<T>());
     }
   }
 }
@@ -102,9 +102,9 @@ template <typename T> void intersect_line_Test() {
                               slick::GenRandPoint<T>(N));
   slick::Line3DBase<T> line(slick::GenRandPoint<T>(N),
                             slick::GenRandPoint<T>(N));
-  auto res = plane.intersect(line);
-  if (res.first) {
-    check_on_plane(plane, res.second);
+  auto pt = plane.intersect(line);
+  if (pt) {
+    check_on_plane(plane, *pt);
   }
 }
 
@@ -121,12 +121,11 @@ template <typename T> void axisaligned_intersect_plane_Test() {
     const auto t1 = slick::GenRandNumber<T>(N);
     int i1 = (i + 1) % 3;
     const auto pln1 = GenerateAxisAlignedPlane<T>(i1, t1);
-    auto res = pln.intersect(pln1);
-    EXPECT_EQ(res.first, true); // diff axisaligned planes always intersect
-    EXPECT_NEAR(t, res.second.point1()[i], slick::Gap<T>());
-    EXPECT_NEAR(t, res.second.point2()[i], slick::Gap<T>());
-    EXPECT_NEAR(t1, res.second.point1()[i1], slick::Gap<T>());
-    EXPECT_NEAR(t1, res.second.point2()[i1], slick::Gap<T>());
+    auto line = pln.intersect(pln1);
+    EXPECT_NEAR(t, (*line).point1()[i], slick::Gap<T>());
+    EXPECT_NEAR(t, (*line).point2()[i], slick::Gap<T>());
+    EXPECT_NEAR(t1, (*line).point1()[i1], slick::Gap<T>());
+    EXPECT_NEAR(t1, (*line).point2()[i1], slick::Gap<T>());
   }
 }
 
@@ -144,12 +143,12 @@ template <typename T> void intersect_plane_Test() {
   slick::Plane3DBase<T> plane2(slick::GenRandPoint<T>(N),
                                slick::GenRandPoint<T>(N),
                                slick::GenRandPoint<T>(N));
-  auto res = plane1.intersect(plane2);
-  if (res.first) {
-    check_on_plane(plane1, res.second.point1());
-    check_on_plane(plane1, res.second.point2());
-    check_on_plane(plane2, res.second.point1());
-    check_on_plane(plane2, res.second.point2());
+  auto line = plane1.intersect(plane2);
+  if (line) {
+    check_on_plane(plane1, (*line).point1());
+    check_on_plane(plane1, (*line).point2());
+    check_on_plane(plane2, (*line).point1());
+    check_on_plane(plane2, (*line).point2());
   }
 }
 

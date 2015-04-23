@@ -1,5 +1,6 @@
 // Copyright 2014 The Slick Authors. All rights reserved.
 #pragma once
+#include <memory>
 #include <vector>
 #include <Eigen/Dense>
 #include "slick/geometry/line3d.h"
@@ -65,32 +66,32 @@ template <typename T> struct Plane3DBase {
     return t * t / normal().squaredNorm();
   }
 
-  std::pair<bool, PointType> intersect(Line3DBase<T> const &ln) const {
+  std::unique_ptr<PointType> intersect(Line3DBase<T> const &ln) const {
     PointType intersection;
     const auto n = normal();
     const auto p = point();
     PointType lv = ln.line_vector();
 
     if (std::fabs(lv.dot(n)) < 1e-12)
-      return std::make_pair(false, PointType());
+      return std::unique_ptr<PointType>();
 
     PointType lp = ln.point1();
     T t = (p.dot(n) - n.dot(lp)) / (n.dot(lv));
     intersection = lp + t * lv;
-    return std::make_pair(true, intersection);
+    return std::unique_ptr<PointType>(new PointType(intersection));
   }
 
   /// @ref: http://mathworld.wolfram.com/Plane-PlaneIntersection.html
-  std::pair<bool, Line3DBase<T>> intersect(const Plane3DBase &other_plane) const {
+  std::unique_ptr<Line3DBase<T>> intersect(const Plane3DBase &other_plane) const {
     Line3DBase<T> line;
     const auto n = normal();
     const auto line_vector = n.cross(other_plane.normal());
     if (line_vector.norm() < 1.e-9) // two planes are parallel
-      return std::make_pair(false, Line3DBase<T>());
+      return std::unique_ptr<Line3DBase<T>>();
     if (pln_eq_[3] == 0 && other_plane.pln_eq_[3] == 0) {
       line.point1() << 0, 0, 0;
       line.point2() = line.point1() + line_vector;
-      return std::make_pair(true, line);
+      return std::unique_ptr<Line3DBase<T>>(new Line3DBase<T>(line));
     }
 
     auto solve_onaxis = [&](int axis) {
@@ -118,7 +119,7 @@ template <typename T> struct Plane3DBase {
     } else {
       solve_onaxis(0);
     }
-    return std::make_pair(true, line);
+    return std::unique_ptr<Line3DBase<T>>(new Line3DBase<T>(line));
   }
 
   Eigen::Matrix<T, 3, 1> normal() const { return pln_eq_.head<3>(); }
