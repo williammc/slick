@@ -3,12 +3,17 @@
 #include "slick/geometry/plane3d.h"
 #include "slick/test/unittest/util.h"
 
-template <typename T> inline Eigen::Matrix<T, 3, 1> GenRandPoint() {
-  const T N = 10;
-  const T x = T(std::rand()) / T(RAND_MAX) * N;
-  const T y = T(std::rand()) / T(RAND_MAX) * N;
-  const T z = T(std::rand()) / T(RAND_MAX) * N;
-  return Eigen::Matrix<T, 3, 1>(x, y, z);
+const int N = 10;
+
+template <typename T>
+slick::Plane3DBase<T> GenerateAxisAlignedPlane(int index, T value) {
+  auto p1 = slick::GenRandPoint<T>(N);
+  p1[index] = value;
+  auto p2 = slick::GenRandPoint<T>(N);
+  p2[index] = value;
+  auto p3 = slick::GenRandPoint<T>(N);
+  p3[index] = value;
+  return slick::Plane3DBase<T>(p1, p2, p3);
 }
 
 template <typename T>
@@ -23,9 +28,10 @@ void check_on_plane(const slick::Plane3DBase<T> &pln,
 template <typename T> void Project_Test() {
   std::srand(
       std::time(nullptr)); // use current time as seed for random generator
-  slick::Plane3DBase<T> plane(GenRandPoint<T>(), GenRandPoint<T>(),
-                              GenRandPoint<T>());
-  const auto pr = plane.project(GenRandPoint<T>());
+  slick::Plane3DBase<T> plane(slick::GenRandPoint<T>(N),
+                              slick::GenRandPoint<T>(N),
+                              slick::GenRandPoint<T>(N));
+  const auto pr = plane.project(slick::GenRandPoint<T>(N));
   const auto eq = plane.equation();
   const T t = pr[0] * eq[0] + pr[1] * eq[1] + pr[2] * eq[2] + eq[3];
   EXPECT_NEAR(std::fabs(t), 0.0, slick::Gap<T>());
@@ -36,12 +42,29 @@ TEST(Plane3DBaseTest, Project) {
   Project_Test<float>();
 }
 
+/// check for axis-aligned planes
+template <typename T> void axisaligned_perpendicular_distance_Test() {
+  for (int i = 0; i < 3; ++i) {
+    const auto t = slick::GenRandNumber<T>(N);
+    const auto pln = GenerateAxisAlignedPlane<T>(i, t);
+    const auto pt = slick::GenRandPoint<T>(N);
+    const T d = pln.perpendicular_distance(pt);
+    EXPECT_NEAR(d, std::fabs(t - pt[i]), slick::Gap<T>());
+  }
+}
+
+TEST(Plane3DBaseTest, axisaligned_perpendicular_distance) {
+  axisaligned_perpendicular_distance_Test<double>();
+  axisaligned_perpendicular_distance_Test<float>();
+}
+
 template <typename T> void perpendicular_distance_Test() {
   std::srand(
       std::time(nullptr)); // use current time as seed for random generator
-  slick::Plane3DBase<T> plane(GenRandPoint<T>(), GenRandPoint<T>(),
-                              GenRandPoint<T>());
-  const auto pt = GenRandPoint<T>();
+  slick::Plane3DBase<T> plane(slick::GenRandPoint<T>(N),
+                              slick::GenRandPoint<T>(N),
+                              slick::GenRandPoint<T>(N));
+  const auto pt = slick::GenRandPoint<T>(N);
   const auto pr = plane.project(pt);
   const T t = plane.perpendicular_distance(pt);
   EXPECT_NEAR(t, (pt - pr).norm(), slick::Gap<T>());
@@ -52,12 +75,33 @@ TEST(Plane3DBaseTest, perpendicular_distance) {
   perpendicular_distance_Test<float>();
 }
 
+/// check for axis-aligned planes
+template <typename T> void axisaligned_intersect_line_Test() {
+  for (int i = 0; i < 3; ++i) {
+    const auto t = slick::GenRandNumber<T>(N);
+    const auto pln = GenerateAxisAlignedPlane<T>(i, t);
+    slick::Line3DBase<T> line(slick::GenRandPoint<T>(N),
+                              slick::GenRandPoint<T>(N));
+    auto res = pln.intersect(line);
+    if (res.first) {
+      EXPECT_NEAR(t, res.second[i], slick::Gap<T>());
+    }
+  }
+}
+
+TEST(Plane3DBaseTest, axisaligned_intersect_line) {
+  axisaligned_intersect_line_Test<double>();
+  axisaligned_intersect_line_Test<float>();
+}
+
 template <typename T> void intersect_line_Test() {
   std::srand(
       std::time(nullptr)); // use current time as seed for random generator
-  slick::Plane3DBase<T> plane(GenRandPoint<T>(), GenRandPoint<T>(),
-                              GenRandPoint<T>());
-  slick::Line3DBase<T> line(GenRandPoint<T>(), GenRandPoint<T>());
+  slick::Plane3DBase<T> plane(slick::GenRandPoint<T>(N),
+                              slick::GenRandPoint<T>(N),
+                              slick::GenRandPoint<T>(N));
+  slick::Line3DBase<T> line(slick::GenRandPoint<T>(N),
+                            slick::GenRandPoint<T>(N));
   auto res = plane.intersect(line);
   if (res.first) {
     check_on_plane(plane, res.second);
@@ -69,13 +113,37 @@ TEST(Plane3DBaseTest, intersect_line) {
   intersect_line_Test<float>();
 }
 
+/// check for axis-aligned planes intersection
+template <typename T> void axisaligned_intersect_plane_Test() {
+  for (int i = 0; i < 3; ++i) {
+    const auto t = slick::GenRandNumber<T>(N);
+    const auto pln = GenerateAxisAlignedPlane<T>(i, t);
+    const auto t1 = slick::GenRandNumber<T>(N);
+    int i1 = (i + 1) % 3;
+    const auto pln1 = GenerateAxisAlignedPlane<T>(i1, t1);
+    auto res = pln.intersect(pln1);
+    EXPECT_EQ(res.first, true); // diff axisaligned planes always intersect
+    EXPECT_NEAR(t, res.second.point1()[i], slick::Gap<T>());
+    EXPECT_NEAR(t, res.second.point2()[i], slick::Gap<T>());
+    EXPECT_NEAR(t1, res.second.point1()[i1], slick::Gap<T>());
+    EXPECT_NEAR(t1, res.second.point2()[i1], slick::Gap<T>());
+  }
+}
+
+TEST(Plane3DBaseTest, axisaligned_intersect_plane) {
+  axisaligned_intersect_plane_Test<double>();
+  axisaligned_intersect_plane_Test<float>();
+}
+
 template <typename T> void intersect_plane_Test() {
   std::srand(
       std::time(nullptr)); // use current time as seed for random generator
-  slick::Plane3DBase<T> plane1(GenRandPoint<T>(), GenRandPoint<T>(),
-                               GenRandPoint<T>());
-  slick::Plane3DBase<T> plane2(GenRandPoint<T>(), GenRandPoint<T>(),
-                               GenRandPoint<T>());
+  slick::Plane3DBase<T> plane1(slick::GenRandPoint<T>(N),
+                               slick::GenRandPoint<T>(N),
+                               slick::GenRandPoint<T>(N));
+  slick::Plane3DBase<T> plane2(slick::GenRandPoint<T>(N),
+                               slick::GenRandPoint<T>(N),
+                               slick::GenRandPoint<T>(N));
   auto res = plane1.intersect(plane2);
   if (res.first) {
     check_on_plane(plane1, res.second.point1());

@@ -50,4 +50,16 @@ inline T Gap() {
   if (typeid(T) == typeid(float)) return T(1.e-6);
   return T(0);
 }
+
+template <typename T> inline T GenRandNumber(const int N) {
+  return (T(std::rand()) / T(RAND_MAX) - T(0.5)) * T(N);
+}
+
+template <typename T> inline Eigen::Matrix<T, 2, 1> GenRandPoint2D(const int N) {
+  return Eigen::Matrix<T, 2, 1>(GenRandNumber<T>(N), GenRandNumber<T>(N));
+}
+
+template <typename T> inline Eigen::Matrix<T, 3, 1> GenRandPoint(const int N) {
+  return Eigen::Matrix<T, 3, 1>(GenRandNumber<T>(N), GenRandNumber<T>(N), GenRandNumber<T>(N));
+}
 }  // namespace slick

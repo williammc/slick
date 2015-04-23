@@ -93,18 +93,31 @@ template <typename T> struct Plane3DBase {
       return std::make_pair(true, line);
     }
 
-    // equations
-    // a1*x + b1*y + c1*z + d1 = 0;
-    // a2*x + b2*y + c2*z + d2 = 0;
-    // suppose point of intersection line is on Z=1 plane
-    Eigen::Matrix<T, 2, 2> A;
-    A << n[0], n[1], other_plane.normal()[0], other_plane.normal()[1];
-    Eigen::Matrix<T, 2, 1> b;
-    b << -n[2] - pln_eq_[3], -other_plane.normal()[2] - other_plane.pln_eq_[3];
-    line.point1().segment<2>(0) = A.inverse() * b;
-    line.point1()[2] = 1.0;
-    line.point2() = line.point1() + line_vector;
+    auto solve_onaxis = [&](int axis) {
+      // equations
+      // a1*x + b1*y + c1*z + d1 = 0;
+      // a2*x + b2*y + c2*z + d2 = 0;
+      // suppose point of intersection line is on axis=1 plane
+      int i1 = (axis + 1) % 3;
+      int i2 = (axis + 2) % 3;
+      Eigen::Matrix<T, 2, 2> A;
+      A << n[i1], n[i2], other_plane.normal()[i1], other_plane.normal()[i2];
+      Eigen::Matrix<T, 2, 1> b;
+      b << -n[axis] - pln_eq_[3], -other_plane.normal()[axis] - other_plane.pln_eq_[3];
+      const auto v = A.inverse() * b;
+      line.point1()[axis] = 1.0;
+      line.point1()[i1] = v[0];
+      line.point1()[i2] = v[1];
+      line.point2() = line.point1() + line_vector;
+    };
 
+    if (std::fabs(line_vector.dot(Eigen::Matrix<T, 3, 1>(0.0, 0.0, 1.0))) > 1.e-7) {
+      solve_onaxis(2);
+    } else if (std::fabs(line_vector.dot(Eigen::Matrix<T, 3, 1>(0.0, 1.0, 0.0))) > 1.e-7) {
+      solve_onaxis(1);
+    } else {
+      solve_onaxis(0);
+    }
     return std::make_pair(true, line);
   }
 
