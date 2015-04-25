@@ -75,6 +75,47 @@ TEST(Plane3DBaseTest, perpendicular_distance) {
   perpendicular_distance_Test<float>();
 }
 
+
+/// check for axis-aligned planes
+template <typename T> void axisaligned_intersect_ray_Test() {
+  for (int i = 0; i < 3; ++i) {
+    const auto t = slick::GenRandNumber<T>(N);
+    const auto pln = GenerateAxisAlignedPlane<T>(i, t);
+    const auto ray = slick::GenRandPoint<T>(N);
+    auto pt = pln.intersect(ray);
+    if (pt) {
+      EXPECT_NEAR(t, (*pt)[i], slick::Gap<T>());
+      const auto d = ray.normalized().dot(pt->normalized());
+      EXPECT_NEAR(std::fabs(d), 1.0, slick::Gap<T>());
+    }
+  }
+}
+
+TEST(Plane3DBaseTest, axisaligned_intersect_ray) {
+  axisaligned_intersect_ray_Test<double>();
+  axisaligned_intersect_ray_Test<float>();
+}
+
+template <typename T> void intersect_ray_Test() {
+  std::srand(
+    std::time(nullptr)); // use current time as seed for random generator
+  slick::Plane3DBase<T> plane(slick::GenRandPoint<T>(N),
+                              slick::GenRandPoint<T>(N),
+                              slick::GenRandPoint<T>(N));
+  const auto ray = slick::GenRandPoint<T>(N);
+  auto pt = plane.intersect(ray);
+  if (pt) {
+    check_on_plane(plane, *pt);
+    const auto d = ray.normalized().dot(pt->normalized());
+    EXPECT_NEAR(std::fabs(d), 1.0, slick::Gap<T>());
+  }
+}
+
+TEST(Plane3DBaseTest, intersect_ray) {
+  intersect_ray_Test<double>();
+  intersect_ray_Test<float>();
+}
+
 /// check for axis-aligned planes
 template <typename T> void axisaligned_intersect_line_Test() {
   for (int i = 0; i < 3; ++i) {
@@ -88,6 +129,7 @@ template <typename T> void axisaligned_intersect_line_Test() {
     }
   }
 }
+
 
 TEST(Plane3DBaseTest, axisaligned_intersect_line) {
   axisaligned_intersect_line_Test<double>();

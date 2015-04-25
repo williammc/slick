@@ -66,6 +66,16 @@ template <typename T> struct Plane3DBase {
     return t * t / normal().squaredNorm();
   }
 
+  /// intersection between ray going through origin to this plane
+  std::unique_ptr<PointType> intersect(const PointType& ray) const {
+    PointType ray1 = ray;
+    ray1 /= ray1[2];
+    const T t = ray1.dot(pln_eq_.head<3>());
+    if (t == 0) return std::unique_ptr<PointType>();
+    const T d = -pln_eq_[3] / t;
+    return std::unique_ptr<PointType>(new PointType(ray1 * d)); 
+  }
+
   std::unique_ptr<PointType> intersect(Line3DBase<T> const &ln) const {
     PointType intersection;
     const auto n = normal();
