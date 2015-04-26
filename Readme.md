@@ -7,7 +7,14 @@ The library includes only headers.
 It is written in C++ and is complied with C++11 standard.
 For testing, build with `Slick_WITH_TEST` flag on.
 
-## Version 1.0.0 (November 2014)
+## Versions
+
+### V1.0.0 (November 2014)
+Initial code with Lie Group rigid transform (SO, SE), scene module (camera models), and geometry module (line, plane).
+
+### [V1.1.0](https://github.com/williammc/Slick/releases/tag/v1.1) (April 2015)
+Improved geometry module with more unittests for this module.
+
 
 # Coding Guideline
 `Slick` library and apps follows the C++ Style Guide from [googlecode.com](http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml)
