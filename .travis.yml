@@ -34,4 +34,4 @@ script:
   - clang++ --version
   - cmake ./
   - make
-  - if [ "`echo $CXX`" == "g++" ]; then ctest -C debug; fi
+  - ctest -C debug

@@ -1,3 +1,6 @@
+
+[![Build Status](https://travis-ci.org/williammc/Slick.svg?branch=master)](https://travis-ci.org/williammc/Slick)
+
 Slick library and applications
 Version 1.0.0
 
