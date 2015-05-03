@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 2.8.7)
 
 set(THE_PROJECT_NAME Slick)
 project(${THE_PROJECT_NAME})
