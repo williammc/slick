@@ -6,7 +6,7 @@ compiler:
 # Setup different environments to test
 env:
   global:
-    - LIBSTDC_VERSION=4.8
+    - LIBSTDC_VERSION=4.7
     - CLANG_VERSION=3.5
 
 # Setup repos etc before installation
