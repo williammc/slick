@@ -40,6 +40,9 @@ endif()
 
 ## Build Options ===============================================================
 option(Slick_WITH_TEST "Build Slick library with tests" OFF)
+if(Slick_WITH_TEST_ON)
+  set(Slick_WITH_TEST ON)
+endif()
 option(Slick_WITH_EXAMPLES "Build the library with UI" OFF)
 
 set(CMAKE_CXX_FLAGS ${Slick_CXX_FLAGS})
