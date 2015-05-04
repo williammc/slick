@@ -7,7 +7,7 @@ compiler:
 env:
   global:
     - LIBSTDC_VERSION=4.8
-    - CLANG_VERSION=3.5
+    - CLANG_VERSION=3.6
 
 # Setup repos etc before installation
 before_install:
