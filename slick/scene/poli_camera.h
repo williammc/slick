@@ -191,8 +191,16 @@ class PoliCamera {
   const Eigen::Matrix<Scalar, PoliCamera<Scalar>::param_n_, 1>& parameters() const {
     return params_;
   }
+
   void SetParameters(
     const Eigen::Matrix<Scalar, PoliCamera<Scalar>::param_n_, 1>& params) {
+    params_ = params;
+  }
+  
+  void set_resolution_and_parameters(
+    const int w, const int h, const Eigen::Matrix<Scalar, param_n_, 1>& params) {
+    image_size_[0] = w;
+    image_size_[1] = h;
     params_ = params;
   }
 
