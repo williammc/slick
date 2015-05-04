@@ -24,12 +24,12 @@ install:
   - if [ "$CXX" == "g++" ]; then sudo apt-get install -qq g++-${LIBSTDC_VERSION}; fi
   - if [ "$CXX" == "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${LIBSTDC_VERSION} 50; fi
   - if [ "$CXX" == "g++" ]; then CXX=g++-${LIBSTDC_VERSION}; fi
-  - if [ "$CXX" == "g++" ]; then CC=g++-${LIBSTDC_VERSION}; fi
+  - if [ "$CC" == "gcc" ]; then CC=g++-${LIBSTDC_VERSION}; fi
   
   - if [ "$CXX" == "clang++" ]; then sudo apt-get -qq --allow-unauthenticated install libstdc++-${LIBSTDC_VERSION}-dev; fi
   - if [ "$CXX" == "clang++" ]; then sudo apt-get -qq --allow-unauthenticated install clang-${CLANG_VERSION}; fi
   - if [ "$CXX" == "clang++" ]; then CXX=clang++-${CLANG_VERSION}; fi
-  - if [ "$CXX" == "clang++" ]; then CC=clang++-${CLANG_VERSION}; fi
+  - if [ "$CC" == "clang" ]; then CC=clang++-${CLANG_VERSION}; fi
 
 # command to run tests
 script: 
