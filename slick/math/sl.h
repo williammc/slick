@@ -25,9 +25,9 @@ class SL;
 // - anti-symmetric generators for every pair of off-diagonal elements
 // This choice represents the fact that SL(n) can be interpreted as the product
 // of all symmetric matrices with det() = 1 times SO(n).
-template <typename Precision = SlickScalar, int N = Eigen::Dynamic>
+template <typename Scalar = SlickScalar, int N = Eigen::Dynamic>
 class SL {
-  typedef Eigen::Matrix<Precision, N, N> MatrixType;
+  typedef Eigen::Matrix<Scalar, N, N> MatrixType;
 
  public:
   static const int size = N;  // size of the matrices represented by SL<N>
@@ -54,10 +54,10 @@ class SL {
   // ========================= Operators =================================///
   // multiplies to SLs together by multiplying the underlying matrices
   template <typename P>
-  SL<typename Eigen::internal::scalar_product_traits<Precision, P>::ReturnType,
+  SL<typename Eigen::internal::scalar_product_traits<Scalar, P>::ReturnType,
      N>
   operator*(const SL<P, N>& rhs) const {
-    SL<typename Eigen::internal::scalar_product_traits<Precision,
+    SL<typename Eigen::internal::scalar_product_traits<Scalar,
                                                        P>::ReturnType,
        N> sl_temp;
     sl_temp = matrix_ * rhs.getMatrix();
@@ -88,7 +88,7 @@ class SL {
   // returns the inverse using LU
   SL inverse() const {
     MatrixType m = matrix_.inverse();
-    SL<Precision, N> slTemp = m;
+    SL<Scalar, N> slTemp = m;
     return slTemp;
   }
 
@@ -101,7 +101,7 @@ class SL {
   // returns one generator of the group. see SL for a detailed description of
   // the generators used.
   // @arg i number of the generator between 0 and SL::dim -1 inclusive
-  static inline Eigen::Matrix<Precision, N, N> generator(int i);
+  static inline Eigen::Matrix<Scalar, N, N> generator(int i);
 
   inline const MatrixType& getMatrix() const { return matrix_; }
 
@@ -110,7 +110,7 @@ class SL {
 
   void coerce() {
     using std::abs;
-    Precision det = matrix_.determinant();
+    Scalar det = matrix_.determinant();
     assert(abs(det) > 0);
     using std::pow;
     matrix_ /= pow(det, 1.0 / N);
@@ -126,29 +126,29 @@ class SL {
   MatrixType matrix_;
 };  // class SL
 
-template <typename Precision, int N>
+template <typename Scalar, int N>
 template <int S, typename P, int B>
-inline SL<Precision, N> SL<Precision, N>::exp(
+inline SL<Scalar, N> SL<Scalar, N>::exp(
     const Eigen::Matrix<P, S, 1, B>& v) {
   assert(S == v.size());
-  Eigen::Matrix<Precision, N, N> t = Eigen::Matrix<Precision, N, N>::Zero();
+  Eigen::Matrix<Scalar, N, N> t = Eigen::Matrix<Scalar, N, N>::Zero();
   for (int i = 0; i < dim; ++i) t += generator(i) * v[i];
-  SL<Precision, N> result;
-  Eigen::Matrix<Precision, N, N> mN;
+  SL<Scalar, N> result;
+  Eigen::Matrix<Scalar, N, N> mN;
   // from MatrixBase::exp() => (struc) MatrixExponentialReturnValue
   // (t.exp()).evalTo(mN);
   // from unsupported Eigen class
-  Eigen::MatrixExponential<Eigen::Matrix<Precision, N, N> > mExp(t);
+  Eigen::MatrixExponential<Eigen::Matrix<Scalar, N, N> > mExp(t);
   mExp.compute(mN);
   result = mN;
   return result;
 }
 
-template <typename Precision, int N>
-inline Eigen::Matrix<Precision, N, N> SL<Precision, N>::generator(int i) {
+template <typename Scalar, int N>
+inline Eigen::Matrix<Scalar, N, N> SL<Scalar, N>::generator(int i) {
   assert(i > -1 && i < dim);
-  Eigen::Matrix<Precision, N, N> result =
-      Eigen::Matrix<Precision, N, N>::Zero();
+  Eigen::Matrix<Scalar, N, N> result =
+      Eigen::Matrix<Scalar, N, N>::Zero();
   if (i < DIAG_LIMIT) {  // first ones are the diagonal ones
     result(i, i) = 1;
     result(i + 1, i + 1) = -1;
@@ -175,27 +175,27 @@ inline Eigen::Matrix<Precision, N, N> SL<Precision, N>::generator(int i) {
 // ========================= External Operators ========================///
 // Write an SL to a stream
 // @relates SL
-template <typename Precision, int N>
-inline std::ostream& operator<<(std::ostream& os, const SL<Precision, N>& rhs) {
+template <typename Scalar, int N>
+inline std::ostream& operator<<(std::ostream& os, const SL<Scalar, N>& rhs) {
   return os << rhs.getMatrix();
 }
 
 // Read from a stream to SL
 // @relates SL
-template <typename Precision, int N>
-inline std::istream& operator>>(std::istream& is, SL<Precision, N>& rhs) {
-  Eigen::Matrix<Precision, N, N> m;
+template <typename Scalar, int N>
+inline std::istream& operator>>(std::istream& is, SL<Scalar, N>& rhs) {
+  Eigen::Matrix<Scalar, N, N> m;
   return is >> m;
   rhs = m;
 }
 
 // Left-multiply by a Matrix
 // @relates SL
-template <typename OtherDerived, typename Precision, int N>
+template <typename OtherDerived, typename Scalar, int N>
 inline typename Eigen::ProductReturnType<OtherDerived,
-                                         Eigen::Matrix<Precision, N, N> >::Type
+                                         Eigen::Matrix<Scalar, N, N> >::Type
 operator*(const Eigen::MatrixBase<OtherDerived>& lhs,
-          const SL<Precision, N>& rhs) {
+          const SL<Scalar, N>& rhs) {
   return lhs * rhs.getMatrix();
 }
 }  // namespace slick

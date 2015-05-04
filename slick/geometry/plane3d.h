@@ -1,10 +1,8 @@
 // Copyright 2014 The Slick Authors. All rights reserved.
 #pragma once
 #include <memory>
-#include <vector>
-#include <Eigen/Dense>
+#include <Eigen/Geometry>
 #include "slick/geometry/line3d.h"
-#include "slick/util/mestimator.h"
 #include "slick/datatypes.h"
 
 namespace slick {
@@ -15,13 +13,13 @@ template <typename T> struct Plane3DBase {
   Plane3DBase() = default;
 
   Plane3DBase(const PointType &p1, const PointType &p2, const PointType &p3) {
-    pln_eq_.head<3>() = ((p1 - p2).cross(p1 - p3)).normalized();
+    pln_eq_.head(3) = ((p1 - p2).cross(p1 - p3)).normalized();
     pln_eq_[3] = -(normal().dot(p1));
     normalize();
   }
 
   Plane3DBase(const PointType &point, const PointType &normal) {
-    pln_eq_.head<3>() = normal;
+    pln_eq_.head(3) = normal;
     pln_eq_[3] = -(normal.dot(point));
     normalize();
   }
@@ -48,12 +46,12 @@ template <typename T> struct Plane3DBase {
 
   /// @ref: http://www.9math.com/book/projection-point-plane
   PointType project(const PointType &pt) const {
-    const T t = pln_eq_.head<3>().dot(pt) + pln_eq_[3];
-    const T s = pln_eq_.head<3>().squaredNorm();
+    const T t = pln_eq_.head(3).dot(pt) + pln_eq_[3];
+    const T s = pln_eq_.head(3).squaredNorm();
     const T t1 = t / s;
-    const T x = pt[0] - pln_eq_[0]*t1;
-    const T y = pt[1] - pln_eq_[1]*t1;
-    const T z = pt[2] - pln_eq_[2]*t1;
+    const T x = pt[0] - pln_eq_[0] * t1;
+    const T y = pt[1] - pln_eq_[1] * t1;
+    const T z = pt[2] - pln_eq_[2] * t1;
     return PointType(x, y, z);
   }
 
@@ -62,18 +60,19 @@ template <typename T> struct Plane3DBase {
   }
 
   T perpendicular_sqdistance(const PointType &pt) const {
-    const T t = pln_eq_.head<3>().dot(pt) + pln_eq_[3];
+    const T t = pln_eq_.head(3).dot(pt) + pln_eq_[3];
     return t * t / normal().squaredNorm();
   }
 
   /// intersection between ray going through origin to this plane
-  std::unique_ptr<PointType> intersect(const PointType& ray) const {
+  std::unique_ptr<PointType> intersect(const PointType &ray) const {
     PointType ray1 = ray;
     ray1 /= ray1[2];
-    const T t = ray1.dot(pln_eq_.head<3>());
-    if (t == 0) return std::unique_ptr<PointType>();
+    const T t = ray1.dot(pln_eq_.head(3));
+    if (t == 0)
+      return std::unique_ptr<PointType>();
     const T d = -pln_eq_[3] / t;
-    return std::unique_ptr<PointType>(new PointType(ray1 * d)); 
+    return std::unique_ptr<PointType>(new PointType(ray1 * d));
   }
 
   std::unique_ptr<PointType> intersect(Line3DBase<T> const &ln) const {
@@ -92,7 +91,8 @@ template <typename T> struct Plane3DBase {
   }
 
   /// @ref: http://mathworld.wolfram.com/Plane-PlaneIntersection.html
-  std::unique_ptr<Line3DBase<T>> intersect(const Plane3DBase &other_plane) const {
+  std::unique_ptr<Line3DBase<T>>
+  intersect(const Plane3DBase &other_plane) const {
     Line3DBase<T> line;
     const auto n = normal();
     const auto line_vector = n.cross(other_plane.normal());
@@ -114,7 +114,8 @@ template <typename T> struct Plane3DBase {
       Eigen::Matrix<T, 2, 2> A;
       A << n[i1], n[i2], other_plane.normal()[i1], other_plane.normal()[i2];
       Eigen::Matrix<T, 2, 1> b;
-      b << -n[axis] - pln_eq_[3], -other_plane.normal()[axis] - other_plane.pln_eq_[3];
+      b << -n[axis] - pln_eq_[3],
+          -other_plane.normal()[axis] - other_plane.pln_eq_[3];
       const auto v = A.inverse() * b;
       line.point1()[axis] = 1.0;
       line.point1()[i1] = v[0];
@@ -122,9 +123,11 @@ template <typename T> struct Plane3DBase {
       line.point2() = line.point1() + line_vector;
     };
 
-    if (std::fabs(line_vector.dot(Eigen::Matrix<T, 3, 1>(0.0, 0.0, 1.0))) > 1.e-7) {
+    if (std::fabs(line_vector.dot(Eigen::Matrix<T, 3, 1>(0.0, 0.0, 1.0))) >
+        1.e-7) {
       solve_onaxis(2);
-    } else if (std::fabs(line_vector.dot(Eigen::Matrix<T, 3, 1>(0.0, 1.0, 0.0))) > 1.e-7) {
+    } else if (std::fabs(line_vector.dot(
+                   Eigen::Matrix<T, 3, 1>(0.0, 1.0, 0.0))) > 1.e-7) {
       solve_onaxis(1);
     } else {
       solve_onaxis(0);
@@ -132,13 +135,13 @@ template <typename T> struct Plane3DBase {
     return std::unique_ptr<Line3DBase<T>>(new Line3DBase<T>(line));
   }
 
-  Eigen::Matrix<T, 3, 1> normal() const { return pln_eq_.head<3>(); }
+  Eigen::Matrix<T, 3, 1> normal() const { return pln_eq_.head(3); }
 
   Eigen::Matrix<T, 4, 1> equation() const { return pln_eq_; }
 
   /// Normalize normal
   void normalize() {
-    const T t = pln_eq_.head<3>().norm();
+    const T t = pln_eq_.head(3).norm();
     pln_eq_ /= t;
   }
 

@@ -8,9 +8,9 @@
 
 namespace slick {
 
-template <typename Precision>
+template <typename Scalar>
 class SO3Group;
-template <typename Precision>
+template <typename Scalar>
 class SE3Group;
 
 using SO3 = SO3Group<SlickScalar>;
@@ -27,12 +27,12 @@ using SO3f = SO3Group<float>;
 /// and whose length is the angle of rotation in radians.
 /// Exponentiating this vector gives the matrix,
 /// and the logarithm of the matrix gives this vector.
-template <typename Precision = SlickScalar>
+template <typename Scalar = SlickScalar>
 class SO3Group {
-  typedef Eigen::Matrix<Precision, 3, 3> MatrixType;
+  using MatrixType = Eigen::Matrix<Scalar, 3, 3>;
 
  public:
-  friend class SE3Group<Precision>;
+  friend class SE3Group<Scalar>;
   // Constructors  =============================================================
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   /// Default constructor. Initialises the matrix to the identity (no rotation)
@@ -61,7 +61,7 @@ class SO3Group {
   template <typename P1, typename P2, int O1, int O2>
   SO3Group(const Eigen::Matrix<P1, 3, 1, O1>& a,
            const Eigen::Matrix<P2, 3, 1, O2>& b) {
-    Eigen::Matrix<Precision, 3, 1> n = a.cross(b);
+    Eigen::Matrix<Scalar, 3, 1> n = a.cross(b);
     if (n.norm() == 0) {
       /// check that the vectors are in the same direction if cross product is
       /// 0.
@@ -73,7 +73,7 @@ class SO3Group {
       return;
     }
     n.normalize();
-    Eigen::Matrix<Precision, 3, 3> R1;
+    Eigen::Matrix<Scalar, 3, 3> R1;
     R1.col(0) = a.normalized();
     R1.col(1) = n;
     R1.col(2) = n.cross(R1.col(0));
@@ -102,10 +102,10 @@ class SO3Group {
   /// Right-multiply by another rotation matrix
   template <typename P>
   SO3Group<
-      typename Eigen::internal::scalar_product_traits<Precision, P>::ReturnType>
+      typename Eigen::internal::scalar_product_traits<Scalar, P>::ReturnType>
   operator*(const SO3Group<P>& rhs) const {
     SO3Group<typename Eigen::internal::scalar_product_traits<
-        Precision, P>::ReturnType> SO3GroupTemp;
+        Scalar, P>::ReturnType> SO3GroupTemp;
     SO3GroupTemp = matrix_ * rhs.get_matrix();
     return SO3GroupTemp;
   }
@@ -126,8 +126,8 @@ class SO3Group {
   /// \f$ M \f$, the adjoint \f$Adj()\f$ obeys
   /// \f$ e^{\text{Adj}(v)} = Me^{v}M^{-1} \f$
   template <int S, int O>
-  Eigen::Matrix<Precision, 3, 1> adjoint(
-      const Eigen::Matrix<Precision, S, 1, O>& vect) const {
+  Eigen::Matrix<Scalar, 3, 1> adjoint(
+      const Eigen::Matrix<Scalar, S, 1, O>& vect) const {
     assert(S == vect.rows());
     return *this * vect;
   }
@@ -159,7 +159,7 @@ class SO3Group {
     /// check for positive determinant <=> correct rotation matrix should have
     /// determinant == 1
     if ((matrix_.row(0).cross(matrix_.row(1))).dot(matrix_.row(2)) <=
-        Precision(0)) {
+        Scalar(0)) {
       throw("Invalid Rotation Matrix");
     }
   }
@@ -172,12 +172,12 @@ class SO3Group {
   /// Take the logarithm of the matrix, generating the corresponding vector in
   /// the Lie Algebra.
   /// See the Detailed Description for details of this vector.
-  inline Eigen::Matrix<Precision, 3, 1> ln() const;
+  inline Eigen::Matrix<Scalar, 3, 1> ln() const;
 
   /// Returns the inverse of this matrix (=the transpose, so this is a fast
   /// operation)
   SO3Group inverse() const {
-    SO3Group<Precision> SO3GroupInv;
+    SO3Group<Scalar> SO3GroupInv;
     SO3GroupInv = matrix_.transpose();
     return SO3GroupInv;
   }
@@ -205,32 +205,32 @@ class SO3Group {
 /// @param B \f$\frac{1 - \cos \theta}{\theta^2}\f$
 /// @param R Matrix to hold the return value.
 /// @relates SO3Group
-template <typename Precision, typename Deri31, typename Deri33>
+template <typename Scalar, typename Deri31, typename Deri33>
 inline void rodrigues_so3_group_exp(const Eigen::MatrixBase<Deri31>& w,
-                                    const Precision A, const Precision B,
+                                    const Scalar A, const Scalar B,
                                     Eigen::MatrixBase<Deri33>& R) {
-  const Precision wx2 = (Precision)w(0, 0) * w(0, 0);
-  const Precision wy2 = (Precision)w(1, 0) * w(1, 0);
-  const Precision wz2 = (Precision)w(2, 0) * w(2, 0);
+  const Scalar wx2 = (Scalar)w(0, 0) * w(0, 0);
+  const Scalar wy2 = (Scalar)w(1, 0) * w(1, 0);
+  const Scalar wz2 = (Scalar)w(2, 0) * w(2, 0);
 
   R(0, 0) = 1.0 - B * (wy2 + wz2);
   R(1, 1) = 1.0 - B * (wx2 + wz2);
   R(2, 2) = 1.0 - B * (wx2 + wy2);
   {
-    const Precision a = A * w(2, 0);
-    const Precision b = B * (w(0, 0) * w(1, 0));
+    const Scalar a = A * w(2, 0);
+    const Scalar b = B * (w(0, 0) * w(1, 0));
     R(0, 1) = b - a;
     R(1, 0) = b + a;
   }
   {
-    const Precision a = A * w(1, 0);
-    const Precision b = B * (w(0, 0) * w(2, 0));
+    const Scalar a = A * w(1, 0);
+    const Scalar b = B * (w(0, 0) * w(2, 0));
     R(0, 2) = b + a;
     R(2, 0) = b - a;
   }
   {
-    const Precision a = A * w(0, 0);
-    const Precision b = B * (w(1, 0) * w(2, 0));
+    const Scalar a = A * w(0, 0);
+    const Scalar b = B * (w(1, 0) * w(2, 0));
     R(1, 2) = b - a;
     R(2, 1) = b + a;
   }
@@ -238,90 +238,90 @@ inline void rodrigues_so3_group_exp(const Eigen::MatrixBase<Deri31>& w,
 
 /// Perform the exponential of the matrix \f$ \sum_i w_iG_i\f$
 /// @param w Weightings of the generator matrices.
-template <typename Precision>
+template <typename Scalar>
 template <typename Deri31>
-inline SO3Group<Precision> SO3Group<Precision>::exp(
+inline SO3Group<Scalar> SO3Group<Scalar>::exp(
     const Eigen::MatrixBase<Deri31>& w) {
   using std::sqrt;
   using std::sin;
   using std::cos;
 
-  static const Precision one_6th = Precision(1.0) / Precision(6.0);
-  static const Precision one_20th = Precision(1.0) / Precision(20.0);
+  static const Scalar one_6th = Scalar(1.0) / Scalar(6.0);
+  static const Scalar one_20th = Scalar(1.0) / Scalar(20.0);
 
-  const Precision theta_sq = w.col(0).squaredNorm();
-  const Precision theta = sqrt(theta_sq);
-  Precision A, B;
+  const Scalar theta_sq = w.col(0).squaredNorm();
+  const Scalar theta = sqrt(theta_sq);
+  Scalar A, B;
   /// Use a Taylor series expansion near zero. This is required for
   /// accuracy, since sin t / t and (1-cos t)/t^2 are both 0/0.
-  if (theta_sq < Precision(1e-8)) {
-    A = Precision(1.0) - one_6th * theta_sq;
-    B = Precision(0.5);
+  if (theta_sq < Scalar(1e-8)) {
+    A = Scalar(1.0) - one_6th * theta_sq;
+    B = Scalar(0.5);
   } else {
-    if (theta_sq < Precision(1e-6)) {
-      B = Precision(0.5) - Precision(0.25) * one_6th * theta_sq;
-      A = Precision(1.0) -
-          theta_sq * one_6th * (Precision(1.0) - one_20th * theta_sq);
+    if (theta_sq < Scalar(1e-6)) {
+      B = Scalar(0.5) - Scalar(0.25) * one_6th * theta_sq;
+      A = Scalar(1.0) -
+          theta_sq * one_6th * (Scalar(1.0) - one_20th * theta_sq);
     } else {
-      const Precision inv_theta = Precision(1.0) / theta;
+      const Scalar inv_theta = Scalar(1.0) / theta;
       A = sin(theta) * inv_theta;
-      B = (Precision(1) - cos(theta)) * (inv_theta * inv_theta);
+      B = (Scalar(1) - cos(theta)) * (inv_theta * inv_theta);
     }
   }
   MatrixType m;
   m.setIdentity();
   rodrigues_so3_group_exp(w, A, B, m);
 
-  SO3Group<Precision> res;
+  SO3Group<Scalar> res;
   res = m;
   return res;
 }
 
-template <typename Precision>
-inline Eigen::Matrix<Precision, 3, 1> SO3Group<Precision>::ln() const {
-  Eigen::Matrix<Precision, 3, 1> result;
+template <typename Scalar>
+inline Eigen::Matrix<Scalar, 3, 1> SO3Group<Scalar>::ln() const {
+  Eigen::Matrix<Scalar, 3, 1> result;
 
-  const Precision cos_angle =
-      (matrix_(0, 0) + matrix_(1, 1) + matrix_(2, 2) - Precision(1.0)) *
-      Precision(0.5);
-  result[0] = (matrix_(2, 1) - matrix_(1, 2)) / Precision(2);
-  result[1] = (matrix_(0, 2) - matrix_(2, 0)) / Precision(2);
-  result[2] = (matrix_(1, 0) - matrix_(0, 1)) / Precision(2);
-  const Precision t = result.squaredNorm();
-  Precision sin_angle_abs = (t > 0.0) ? sqrt(t) : Precision(0.0);
-  if (cos_angle > Precision(M_SQRT1_2)) {  /// [0 - Pi/4] use asin
-    if (sin_angle_abs > Precision(0)) {
+  const Scalar cos_angle =
+      (matrix_(0, 0) + matrix_(1, 1) + matrix_(2, 2) - Scalar(1.0)) *
+      Scalar(0.5);
+  result[0] = (matrix_(2, 1) - matrix_(1, 2)) / Scalar(2);
+  result[1] = (matrix_(0, 2) - matrix_(2, 0)) / Scalar(2);
+  result[2] = (matrix_(1, 0) - matrix_(0, 1)) / Scalar(2);
+  const Scalar t = result.squaredNorm();
+  Scalar sin_angle_abs = (t > 0.0) ? sqrt(t) : Scalar(0.0);
+  if (cos_angle > Scalar(M_SQRT1_2)) {  /// [0 - Pi/4] use asin
+    if (sin_angle_abs > Scalar(0)) {
       result *= asin(sin_angle_abs) / sin_angle_abs;
     }
-  } else if (cos_angle > -Precision(M_SQRT1_2)) {  /// [Pi/4 - 3Pi/4] use acos,
+  } else if (cos_angle > -Scalar(M_SQRT1_2)) {  /// [Pi/4 - 3Pi/4] use acos,
                                                    /// but antisymmetric part
-    const Precision angle = acos(cos_angle);
+    const Scalar angle = acos(cos_angle);
     result *= angle / sin_angle_abs;
   } else {  /// rest use symmetric part
     /// antisymmetric part vanishes, but still large rotation, need information
     /// from symmetric part
-    const Precision angle = Precision(M_PI) - asin(sin_angle_abs);
-    const Precision d0 = matrix_(0, 0) - cos_angle,
+    const Scalar angle = Scalar(M_PI) - asin(sin_angle_abs);
+    const Scalar d0 = matrix_(0, 0) - cos_angle,
                     d1 = matrix_(1, 1) - cos_angle,
                     d2 = matrix_(2, 2) - cos_angle;
-    Eigen::Matrix<Precision, 3, 1> r2;
+    Eigen::Matrix<Scalar, 3, 1> r2;
     if (d0 * d0 > d1 * d1 &&
         d0 * d0 > d2 * d2) {  /// first is largest, fill with first column
       r2[0] = d0;
-      r2[1] = (matrix_(1, 0) + matrix_(0, 1)) / Precision(2);
-      r2[2] = (matrix_(0, 2) + matrix_(2, 0)) / Precision(2);
+      r2[1] = (matrix_(1, 0) + matrix_(0, 1)) / Scalar(2);
+      r2[2] = (matrix_(0, 2) + matrix_(2, 0)) / Scalar(2);
     } else if (d1 * d1 >
                d2 * d2) {  /// second is largest, fill with second column
-      r2[0] = (matrix_(1, 0) + matrix_(0, 1)) / Precision(2);
+      r2[0] = (matrix_(1, 0) + matrix_(0, 1)) / Scalar(2);
       r2[1] = d1;
-      r2[2] = (matrix_(2, 1) + matrix_(1, 2)) / Precision(2);
+      r2[2] = (matrix_(2, 1) + matrix_(1, 2)) / Scalar(2);
     } else {  /// third is largest, fill with third column
-      r2[0] = (matrix_(0, 2) + matrix_(2, 0)) / Precision(2);
-      r2[1] = (matrix_(2, 1) + matrix_(1, 2)) / Precision(2);
+      r2[0] = (matrix_(0, 2) + matrix_(2, 0)) / Scalar(2);
+      r2[1] = (matrix_(2, 1) + matrix_(1, 2)) / Scalar(2);
       r2[2] = d2;
     }
     /// flip, if we point in the wrong direction!
-    if (r2.dot(result) < Precision(0)) r2 *= Precision(-1);
+    if (r2.dot(result) < Scalar(0)) r2 *= Scalar(-1);
     result = angle * r2.normalized();
   }
   return result;
@@ -330,28 +330,28 @@ inline Eigen::Matrix<Precision, 3, 1> SO3Group<Precision>::ln() const {
 /// External Operators  ========================================================
 /// Write an SO3Group to a stream
 /// @relates SO3Group
-template <typename Precision>
+template <typename Scalar>
 inline std::ostream& operator<<(std::ostream& os,
-                                const SO3Group<Precision>& rhs) {
+                                const SO3Group<Scalar>& rhs) {
   return os << rhs.get_matrix();
 }
 
 /// Read from a stream to SO3Group
 /// @relates SO3Group
-template <typename Precision>
-inline std::istream& operator>>(std::istream& is, SO3Group<Precision>& rhs) {
-  Eigen::Matrix<Precision, 3, 3> m;
+template <typename Scalar>
+inline std::istream& operator>>(std::istream& is, SO3Group<Scalar>& rhs) {
+  Eigen::Matrix<Scalar, 3, 3> m;
   return is >> m;
   rhs = m;
 }
 
 /// Left-multiply by a Matrix
 /// @relates SO3Group
-template <typename OtherDerived, typename Precision>
+template <typename OtherDerived, typename Scalar>
 inline typename Eigen::ProductReturnType<OtherDerived,
-                                         Eigen::Matrix<Precision, 3, 3> >::Type
+                                         Eigen::Matrix<Scalar, 3, 3> >::Type
 operator*(const Eigen::MatrixBase<OtherDerived>& lhs,
-          const SO3Group<Precision>& rhs) {
+          const SO3Group<Scalar>& rhs) {
   return lhs * rhs.get_matrix();
 }
 }  // end namespace slick

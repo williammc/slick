@@ -20,7 +20,7 @@ template <typename T>
 void check_on_plane(const slick::Plane3DBase<T> &pln,
                     const Eigen::Matrix<T, 3, 1> &pt) {
 
-  const T t = pt.dot(pln.equation().head<3>()) + pln.equation()[3];
+  const T t = pt.dot(pln.equation().head(3)) + pln.equation()[3];
   EXPECT_NEAR(std::fabs(t), 0.0, slick::Gap<T>());
 };
 

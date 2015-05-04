@@ -114,7 +114,7 @@ template <typename Scalar> struct Line2DBase {
   /// @return projected point of input point (@p) onto given line (@line_eq)
   static PointType project_point(const PointType &p,
                                  const Eigen::Matrix<Scalar, 3, 1> &line_eq) {
-    const PointType n = line_eq.segment<2>(0).normalized();
+    const PointType n = (line_eq.segment<2>(0)).normalized();
     const PointType line_vec(-n[1], n[0]);
     const PointType apoint = get_a_point(line_eq, 1);
     const Scalar s = (p - apoint).transpose() * line_vec;
