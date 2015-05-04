@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/williammc/Slick.svg?branch=master)](https://travis-ci.org/williammc/Slick)
+[![Build Status](https://travis-ci.org/williammc/Slick.svg?branch=master)](https://travis-ci.org/williammc/Slick) : GCC4.8, Clang3.5
 
 Slick library and applications
 Version 1.0.0
