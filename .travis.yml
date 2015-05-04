@@ -28,7 +28,6 @@ install:
   - if [ "$CXX" == "g++" ]; then CXX=g++-${LIBSTDC_VERSION}; fi
   - if [ "$CC" == "gcc" ]; then CC=gcc-${LIBSTDC_VERSION}; fi
   
-  - if [ "$CXX" == "clang++" ]; then sudo apt-get -qq --allow-unauthenticated install libc++-${CLANG_VERSION}-dev; fi
   - if [ "$CXX" == "clang++" ]; then sudo apt-get -qq --allow-unauthenticated install clang-${CLANG_VERSION}; fi
   - if [ "$CXX" == "clang++" ]; then CXX=clang++-${CLANG_VERSION}; fi
   - if [ "$CC" == "clang" ]; then CC=clang-${CLANG_VERSION}; fi
