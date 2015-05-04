@@ -33,8 +33,8 @@ install:
   - if [ "$CC" == "clang" ]; then CC=clang-${CLANG_VERSION}; fi
 
 # command to run tests
-script: 
-  - clang++ --version
+script:
+  - locate limits
   - cmake -DSlick_WITH_TEST_ON=TRUE ./
-  - make
+  - make VERBOSE=1
   - ctest -C debug
