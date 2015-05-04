@@ -54,7 +54,7 @@ template <typename Scalar> struct Line2DBase {
   static Scalar
   perpen_dist_to_line_signed(const Eigen::Matrix<Scalar, 2, 1> &pt,
                              const Eigen::Matrix<Scalar, 3, 1> &leq) {
-    const Scalar t = leq[0] * p[0] + leq[1] * p[1] + leq[2];
+    const Scalar t = leq[0] * pt[0] + leq[1] * pt[1] + leq[2];
     return t / std::sqrt(leq[0] * leq[0] + leq[1] * leq[1]);
   }
 
