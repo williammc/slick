@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/williammc/Slick.svg?branch=master)](https://travis-ci.org/williammc/Slick) : GCC4.8, Clang3.5
+[![Build Status](https://travis-ci.org/williammc/Slick.svg?branch=master)](https://travis-ci.org/williammc/Slick) : GCC4.8, Clang3.5 (Build & Tests)
 
 Slick library and applications
 Version 1.0.0
@@ -33,5 +33,5 @@ To run all the test, run `ctest -C <config>`.
 For instance, `ctest -C debug`
 
 # Todo
-- add more unittests (e.x.: for geometry, scene)
-- modernize code (using clang-mondernize)
+- add more unittests (e.x.: for scene, util)
+- more math :)
