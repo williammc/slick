@@ -6,6 +6,3 @@
 	path = external/gtest-1.7.0
 	url = https://github.com/williammc/gtest.git
 	branch = 1.7.0
-[submodule "external/cmaker"]
-	path = external/cmaker
-	url = https://github.com/williammc/cmaker.git
