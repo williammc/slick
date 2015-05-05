@@ -34,7 +34,6 @@ install:
 
 # command to run tests
 script:
-  - locate limits
   - cmake -DSlick_WITH_TEST_ON=TRUE ./
   - make VERBOSE=1
   - ctest -C debug
