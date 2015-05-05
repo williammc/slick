@@ -9,7 +9,7 @@
 	"build_systems": //===========================================================
 	[
 		{
-			"name": "All",
+			"name": "Slick - All",
 			"cmd":
 			[
 				"${project_path}/@THE_BUILD_CMD@",
