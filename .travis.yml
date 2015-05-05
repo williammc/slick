@@ -23,18 +23,17 @@ install:
   - sudo apt-get -qq install build-essential
   - if [ "$CXX" == "g++" ]; then sudo apt-get install -qq g++-${LIBSTDC_VERSION}; fi
   - if [ "$CC" == "gcc" ]; then sudo apt-get install -qq gcc-${LIBSTDC_VERSION}; fi
+  - if [ "$CXX" == "g++" ]; then sudo apt-get -qq --allow-unauthenticated install libstdc++-${LIBSTDC_VERSION}-dev; fi
   - if [ "$CXX" == "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${LIBSTDC_VERSION} 50; fi
   - if [ "$CXX" == "g++" ]; then CXX=g++-${LIBSTDC_VERSION}; fi
   - if [ "$CC" == "gcc" ]; then CC=gcc-${LIBSTDC_VERSION}; fi
   
-  - if [ "$CXX" == "clang++" ]; then sudo apt-get -qq --allow-unauthenticated install libstdc++-${LIBSTDC_VERSION}-dev; fi
   - if [ "$CXX" == "clang++" ]; then sudo apt-get -qq --allow-unauthenticated install clang-${CLANG_VERSION}; fi
   - if [ "$CXX" == "clang++" ]; then CXX=clang++-${CLANG_VERSION}; fi
   - if [ "$CC" == "clang" ]; then CC=clang-${CLANG_VERSION}; fi
 
 # command to run tests
-script: 
-  - clang++ --version
+script:
   - cmake -DSlick_WITH_TEST_ON=TRUE ./
-  - make
+  - make VERBOSE=1
   - ctest -C debug
