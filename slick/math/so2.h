@@ -35,13 +35,12 @@ public:
   /// Construct from an angle.
   explicit SO2Group(const Scalar l) { *this = this->exp(l); }
 
-// this strictly require C++11 enabled
-/// Construct from list of 4 elements in row-major order of 2x2 matrix.
-/// Currently, giving a list of less than 4 elements causes std::cerr.
+  // this strictly require C++11 enabled
+  /// Construct from list of 4 elements in row-major order of 2x2 matrix.
+  /// Currently, giving a list of less than 4 elements causes std::cerr.
   SO2Group(std::initializer_list<Scalar> l) {
     // this can be solved with static_assert in C++14
-    if (l.size() != 4)
-      std::cerr << "SO2 list constructor requires 4 elements" << std::endl;
+    assert(l.size() == 4);
     Scalar *t = const_cast<Scalar *>(l.begin());
     matrix_(0, 0) = *t++;
     matrix_(0, 1) = *t++;
