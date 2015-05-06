@@ -124,10 +124,6 @@ class PoliCamera {
     return derivs;
   }
 
-  Scalar unit_pixel_distance() {
-    return unit_pixel_distance_;
-  }
-
   /// return (width,height) resolution of the camera
   void get_resolution(int& width, int& height) const {
     width = image_size_[0];
