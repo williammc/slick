@@ -14,7 +14,7 @@ using ObservationPairDouble =
     std::pair<Eigen::Matrix<double, 4, 1>, Eigen::Matrix<double, 2, 1>>;
 
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(ObservationPairFloat)
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(ObservationPairDouble)
+// EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(ObservationPairDouble)
 
 namespace slick {
 
