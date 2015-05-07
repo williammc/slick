@@ -10,7 +10,8 @@ LeastSquareFitPlane(const std::vector<Eigen::Matrix<Scalar, 3, 1>> &points,
                     Plane3DBase<Scalar> &plane) {
   Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> v4_points(points.size(),
                                                                   4);
-  for (auto pt : points) {
+  for (int i = 0; i < int(points.size()); ++i) {
+    const auto pt = points[i];
     v4_points.row(i) = Eigen::Matrix<Scalar, 4, 1>(pt[0], pt[1], pt[2], 1);
   }
   Eigen::Matrix<Scalar, 4, 4> A = v4_points.transpose() * v4_points;
