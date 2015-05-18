@@ -25,7 +25,9 @@ template <typename T> struct Plane3DBase {
   }
 
   // Given plane equation ax + by + cz + d = 0
-  Plane3DBase(const Vec4 &v4_plane) : pln_eq_(v4_plane) {}
+  Plane3DBase(const Vec4 &v4_plane) : pln_eq_(v4_plane) {
+    normalize();
+  }
 
   PointType point() const {
     const auto n = normal();
