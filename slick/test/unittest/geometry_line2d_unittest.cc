@@ -5,6 +5,14 @@
 
 const int N = 10;
 
+template <typename T>
+void check_on_line(const slick::Line2DBase<T> &line,
+                   const Eigen::Matrix<T, 2, 1> &pt) {
+  const auto lv = (line.point2() - line.point1()).normalized();
+  const T t = (pt - line.point1()).normalized().dot(lv);
+  EXPECT_NEAR(std::fabs(t), 1.0, slick::Gap<T>());
+};
+
 // line2d specific functions ===================================================
 template <typename T> void Project_Test() {
   std::srand(
@@ -52,6 +60,27 @@ template <typename T> void perpendicular_sqdistance_Test(T gap) {
 TEST(Line2DBaseTest, perpendicular_sqdistance) {
   perpendicular_sqdistance_Test<double>(slick::Gap<double>());
   // perpendicular_sqdistance_Test<float>(1.e-3);
+}
+
+template <typename T> void intersect_line_Test() {
+  std::srand(
+      std::time(nullptr)); // use current time as seed for random generator
+  slick::Line2DBase<T> line1(slick::GenRandPoint2D<T>(N),
+                               slick::GenRandPoint2D<T>(N));
+  slick::Line2DBase<T> line2(slick::GenRandPoint2D<T>(N),
+                               slick::GenRandPoint2D<T>(N));
+  auto pt = line1.intersect(line2);
+  if (pt) {
+    check_on_line(line1, *pt);
+    check_on_line(line1, *pt);
+    check_on_line(line2, *pt);
+    check_on_line(line2, *pt);
+  }
+}
+
+TEST(Line2DBaseTest, intersect_line) {
+  intersect_line_Test<double>();
+  intersect_line_Test<float>();
 }
 
 int main(int argc, char **argv) {

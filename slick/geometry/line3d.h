@@ -6,9 +6,9 @@
 namespace slick {
 
 // 3D line segment
-template <typename Scalar> struct Line3DBase {
+template <typename T> struct Line3DBase {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  using PointType = Eigen::Matrix<Scalar, 3, 1>;
+  using PointType = Eigen::Matrix<T, 3, 1>;
 
   Line3DBase() = default;
   Line3DBase(const PointType &pt1, const PointType &pt2)
@@ -18,11 +18,11 @@ template <typename Scalar> struct Line3DBase {
     return project_point(pt, pt1_, pt2_);
   }
 
-  Scalar perpendicular_distance(const PointType &pt) const {
+  T perpendicular_distance(const PointType &pt) const {
     return std::sqrt(perpendicular_squared_distance(pt));
   }
 
-  Scalar perpendicular_squared_distance(const PointType &pt) const {
+  T perpendicular_squared_distance(const PointType &pt) const {
     return perpen_sqdist_to_line(pt, pt1_, pt2_);
   }
 
@@ -32,12 +32,12 @@ template <typename Scalar> struct Line3DBase {
   PointType &point2() { return pt2_; }
   const PointType &point2() const { return pt2_; }
 
-  Scalar length() const { return (pt2_ - pt1_).norm(); }
+  T length() const { return (pt2_ - pt1_).norm(); }
   PointType line_vector() const { return pt2_ - pt1_; }
 
   // useful functionalities ====================================================
   // @ref: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
-  static Scalar perpen_sqdist_to_line(const PointType &p, const PointType &pt1,
+  static T perpen_sqdist_to_line(const PointType &p, const PointType &pt1,
                                       const PointType &pt2) {
     const auto v12 = (pt2 - pt1);
     const auto t = v12.cross(pt1 - p);
@@ -47,7 +47,7 @@ template <typename Scalar> struct Line3DBase {
   static PointType project_point(const PointType &pt, const PointType &pt1,
                                  const PointType &pt2) {
     const auto line_vec = (pt2 - pt1).normalized();
-    Scalar s = (pt - pt1).dot(line_vec);
+    T s = (pt - pt1).dot(line_vec);
     return pt1 + line_vec * s;
   }
 
